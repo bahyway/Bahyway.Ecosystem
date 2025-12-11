@@ -1,0 +1,58 @@
+**********************
+PowerShell transcript start
+Start time: 20251205110942
+Username: MSI\Bahaa
+RunAs User: MSI\Bahaa
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll
+Process ID: 47620
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\Users\Bahaa\source\repos\BahyWay\BahyWay/fix_log.txt
+🔍 STARTING DIAGNOSTIC FIX...
+📝 Writing GraphCanvas.cs to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Controls/GraphCanvas.cs
+📝 Writing MainWindow.axaml.cs to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Views/MainWindow.axaml.cs
+📝 Writing MainWindow.axaml to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Views/MainWindow.axaml
+🧹 Cleaning Solution...
+----                 -------------         ------ ----
+-a---           12/5/2025 10:49 AM              0 Correct-Namespace.ps1
+
+PS>pwd
+
+Path
+----
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\scripts
+
+PS>cd ..
+PS>.\Correct-Path.ps1
+�� File is already in the correct place.
+PS>.\Correct-Namespace.ps1
+PS>.\Correct-Path.ps1
+Transcript started, output file is C:\Users\Bahaa\source\repos\BahyWay\BahyWay/fix_log.txt
+�� STARTING DIAGNOSTIC FIX...
+�� Writing GraphCanvas.cs to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Controls/GraphCanvas.cs
+�� Writing MainWindow.axaml.cs to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Views/MainWindow.axaml.cs
+�� Writing MainWindow.axaml to: src/Bahyway.KGEditor/Bahyway.KGEditor.UI/Views/MainWindow.axaml
+�� Cleaning Solution...
+
+Build succeeded in 10.9s
+🚀 Attempting Run...
+     at System.Xml.Linq.XDocument.Parse(String text, LoadOptions options)
+     at Avalonia.Build.Tasks.XamlFileInfo.Parse(String data) in /_/src/Avalonia.Build.Tasks/XamlFileInfo.cs:line 11
+     at Avalonia.Build.Tasks.GenerateAvaloniaResourcesTask.PreProcessXamlFiles(List`1 sources) in /_/src/Avalonia.Build.
+  Tasks/GenerateAvaloniaResourcesTask.cs:line 96
+
+The build failed. Fix the build errors and run again.
+**********************
+PowerShell transcript end
+End time: 20251205111011
+**********************

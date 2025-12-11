@@ -1,0 +1,14 @@
+// beeMDM Master Data Logic
+CONTEXT beeMDM_Governance {
+
+    IDENTITY MasterEntity {
+        BUSINESS_KEY: tax_id
+        FUZZY_MATCH: name USING Levenshtein THRESHOLD 0.85
+    }
+
+    STORAGE DataVault {
+        HUB: hub_customer WITH {
+            customer_key: UUID PRIMARY KEY
+        }
+    }
+}

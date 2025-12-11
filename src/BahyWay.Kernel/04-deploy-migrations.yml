@@ -1,0 +1,226 @@
+﻿---
+# ============================================
+# BAHYWAY EF CORE MIGRATIONS DEPLOYMENT
+# Deploys database migrations to PRIMARY only
+# ============================================
+
+- name: Deploy EF Core Migrations to PostgreSQL Primary
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+    - ../vars/postgresql-config.yml
+
+  vars:
+    solution_dir: "{{ playbook_dir }}/../../../../"
+
+  tasks:
+    # ============================================
+    # PREREQUISITES
+    # ============================================
+    - name: Check if solution directory exists
+      stat:
+        path: "{{ solution_dir }}/Bahyway.sln"
+      register: solution_file
+      tags: [check]
+
+    - name: Verify solution exists
+      assert:
+        that:
+          - solution_file.stat.exists
+        fail_msg: "Solution file not found at {{ solution_dir }}"
+      tags: [check]
+
+    # ============================================
+    # VERIFY CLUSTER HEALTH
+    # ============================================
+    - name: Check primary node health
+      command: docker exec bahyway-postgres-primary pg_isready -U postgres
+      register: primary_health
+      changed_when: false
+      failed_when: primary_health.rc != 0
+      tags: [check]
+
+    - name: Check replica node health
+      command: docker exec bahyway-postgres-replica pg_isready -U postgres
+      register: replica_health
+      changed_when: false
+      failed_when: replica_health.rc != 0
+      tags: [check]
+
+    - name: Verify replication is active
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -t -c \
+        "SELECT COUNT(*) FROM pg_stat_replication WHERE state='streaming';"
+      register: replication_active
+      changed_when: false
+      tags: [check]
+
+    - name: Assert replication is active
+      assert:
+        that:
+          - replication_active.stdout | trim | int > 0
+        fail_msg: "Replication is not active. Check cluster status."
+        success_msg: "Replication is active and healthy."
+      tags: [check]
+
+    # ============================================
+    # UPDATE CONNECTION STRING
+    # ============================================
+    - name: Update appsettings.json with primary connection
+      shell: |
+        cd {{ solution_dir }}/src/AlarmInsight.API
+        jq '.ConnectionStrings.AlarmInsight = "Host=localhost;Port=5432;Database={{ postgres.database }};Username={{ postgres.user }};Password={{ postgres.password }}"' appsettings.json > appsettings.tmp.json
+        mv appsettings.tmp.json appsettings.json
+      tags: [config]
+
+    # ============================================
+    # BUILD SOLUTION
+    # ============================================
+    - name: Clean solution
+      command: dotnet clean
+      args:
+        chdir: "{{ solution_dir }}"
+      tags: [build]
+
+    - name: Restore NuGet packages
+      command: dotnet restore
+      args:
+        chdir: "{{ solution_dir }}"
+      tags: [build]
+
+    - name: Build solution
+      command: dotnet build --configuration Release
+      args:
+        chdir: "{{ solution_dir }}"
+      register: build_result
+      tags: [build]
+
+    - name: Verify build succeeded
+      assert:
+        that:
+          - build_result.rc == 0
+        fail_msg: "Build failed. Check errors above."
+        success_msg: "Build succeeded."
+      tags: [build]
+
+    # ============================================
+    # CREATE MIGRATION (if needed)
+    # ============================================
+    - name: Check if migration exists
+      find:
+        paths: "{{ solution_dir }}/src/AlarmInsight.Infrastructure/Migrations"
+        patterns: "*_InitialCreate.cs"
+      register: migration_files
+      tags: [migration]
+
+    - name: Create initial migration if not exists
+      command: >
+        dotnet ef migrations add InitialCreate
+        --project src/AlarmInsight.Infrastructure
+        --startup-project src/AlarmInsight.API
+      args:
+        chdir: "{{ solution_dir }}"
+      when: migration_files.matched == 0
+      tags: [migration]
+
+    # ============================================
+    # APPLY MIGRATION TO PRIMARY
+    # ============================================
+    - name: Apply migrations to PRIMARY database
+      command: >
+        dotnet ef database update
+        --project src/AlarmInsight.Infrastructure
+        --startup-project src/AlarmInsight.API
+        --connection "Host=localhost;Port=5432;Database={{ postgres.database }};Username={{ postgres.user }};Password={{ postgres.password }}"
+      args:
+        chdir: "{{ solution_dir }}"
+      register: migration_result
+      tags: [deploy]
+
+    - name: Display migration results
+      debug:
+        msg: "{{ migration_result.stdout_lines }}"
+      tags: [deploy]
+
+    # ============================================
+    # VERIFY MIGRATION
+    # ============================================
+    - name: Wait for replication to sync
+      pause:
+        seconds: 5
+      tags: [verify]
+
+    - name: Verify tables exist on PRIMARY
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -d {{ postgres.database }} -c "\dt"
+      register: primary_tables
+      tags: [verify]
+
+    - name: Verify tables exist on REPLICA
+      shell: |
+        docker exec bahyway-postgres-replica psql -U postgres -d {{ postgres.database }} -c "\dt"
+      register: replica_tables
+      tags: [verify]
+
+    - name: Display PRIMARY tables
+      debug:
+        msg: "{{ primary_tables.stdout_lines }}"
+      tags: [verify]
+
+    - name: Display REPLICA tables
+      debug:
+        msg: "{{ replica_tables.stdout_lines }}"
+      tags: [verify]
+
+    - name: Verify tables replicated
+      assert:
+        that:
+          - "'alarms' in primary_tables.stdout"
+          - "'alarms' in replica_tables.stdout"
+          - "'alarm_notes' in primary_tables.stdout"
+          - "'alarm_notes' in replica_tables.stdout"
+        fail_msg: "Tables not properly replicated"
+        success_msg: "All tables replicated successfully"
+      tags: [verify]
+
+    # ============================================
+    # CREATE BACKUP AFTER MIGRATION
+    # ============================================
+    - name: Create Barman backup after migration
+      shell: |
+        docker exec bahyway-barman barman backup primary
+      register: post_migration_backup
+      tags: [backup]
+
+    - name: Display backup results
+      debug:
+        msg: "{{ post_migration_backup.stdout_lines }}"
+      tags: [backup]
+
+    # ============================================
+    # SUCCESS MESSAGE
+    # ============================================
+    - name: Display success message
+      debug:
+        msg:
+          - "✅ Migrations deployed successfully!"
+          - ""
+          - "Database Status:"
+          - "  • Database: {{ postgres.database }}"
+          - "  • Tables created on PRIMARY: ✅"
+          - "  • Tables replicated to REPLICA: ✅"
+          - "  • Post-migration backup: ✅"
+          - ""
+          - "Connection strings:"
+          - "  • Primary (R/W): Host=localhost;Port=5432;Database={{ postgres.database }}"
+          - "  • Replica (R/O): Host=localhost;Port=5433;Database={{ postgres.database }}"
+          - "  • HAProxy Primary: Host=localhost;Port=5000;Database={{ postgres.database }}"
+          - "  • HAProxy Replica: Host=localhost;Port=5001;Database={{ postgres.database }}"
+          - ""
+          - "Next steps:"
+          - "  1. Test your API: cd src/AlarmInsight.API && dotnet run"
+          - "  2. Access Swagger: https://localhost:5001"
+          - "  3. Monitor cluster: docker exec bahyway-postgres-primary psql -U postgres -c 'SELECT * FROM pg_stat_replication;'"
+      tags: [always]

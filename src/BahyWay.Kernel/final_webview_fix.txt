@@ -1,0 +1,103 @@
+**********************
+PowerShell transcript start
+Start time: 20251206164652
+Username: MSI\Bahaa
+RunAs User: MSI\Bahaa
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\Bahaa\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.4.0' -BundledModulesPath 'c:\Users\Bahaa\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.4.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\Bahaa\AppData\Roaming\Code\logs\20251205T233053\window3\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\Bahaa\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-47920-309086.json' -FeatureFlags @() 
+Process ID: 48664
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\Users\Bahaa\source\repos\BahyWay\BahyWay/final_webview_fix.txt
+🔧 REMOVING DUPLICATE PACKAGE VERSIONS...
+✅ Directory.Packages.props cleaned.
+✅ WebGraphControl.cs updated.
+🧹 Cleaning...
+
+🔨 Building...
+  Determining projects to restore...
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj : warning NU1903: Package 'Npgsql' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1603: Bahyway.KGEditor.UI depends on Avalonia.Controls.WebView (>= 11.0.6) but Avalonia.Controls.WebView 11.0.6 was not found. Avalonia.Controls.WebView 11.3.11 was resolved instead.
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5
+  Restored C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj (in 902 ms).
+  Restored C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj (in 1.48 sec).
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1603: Bahyway.KGEditor.UI depends on Avalonia.Controls.WebView (>= 11.0.6) but Avalonia.Controls.WebView 11.0.6 was not found. Avalonia.Controls.WebView 11.3.11 was resolved instead.
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj : warning NU1903: Package 'Npgsql' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(23,23): warning CS8618: Non-nullable property 'SourceId' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(24,23): warning CS8618: Non-nullable property 'TargetId' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(14,23): warning CS8618: Non-nullable property 'Id' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(15,23): warning CS8618: Non-nullable property 'Label' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(8,34): warning CS8618: Non-nullable property 'Context' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(16,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(30,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(31,23): warning CS8618: Non-nullable property 'IdentityRef' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(22,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(23,23): warning CS8618: Non-nullable property 'Type' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(24,23): warning CS8618: Non-nullable property 'Algorithm' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(16,37): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(62,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(62,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(64,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(64,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(37,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+  Bahyway.SharedKernel -> C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\bin\Debug\net8.0\Bahyway.SharedKernel.dll
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Controls\WebGraphControl.cs(10,17): error CS0246: The type or namespace name 'WebView' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj]
+
+Build FAILED.
+
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj : warning NU1903: Package 'Npgsql' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1603: Bahyway.KGEditor.UI depends on Avalonia.Controls.WebView (>= 11.0.6) but Avalonia.Controls.WebView 11.0.6 was not found. Avalonia.Controls.WebView 11.3.11 was resolved instead.
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1603: Bahyway.KGEditor.UI depends on Avalonia.Controls.WebView (>= 11.0.6) but Avalonia.Controls.WebView 11.0.6 was not found. Avalonia.Controls.WebView 11.3.11 was resolved instead.
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj : warning NU1903: Package 'Npgsql' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(23,23): warning CS8618: Non-nullable property 'SourceId' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(24,23): warning CS8618: Non-nullable property 'TargetId' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(14,23): warning CS8618: Non-nullable property 'Id' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Graph\GraphTopology.cs(15,23): warning CS8618: Non-nullable property 'Label' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(8,34): warning CS8618: Non-nullable property 'Context' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(16,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(30,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(31,23): warning CS8618: Non-nullable property 'IdentityRef' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(22,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(23,23): warning CS8618: Non-nullable property 'Type' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(24,23): warning CS8618: Non-nullable property 'Algorithm' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(16,37): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(62,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(62,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(64,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(64,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS8602: Dereference of a possibly null reference. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianModels.cs(37,23): warning CS8618: Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Bahyway.SharedKernel.csproj]
+C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Controls\WebGraphControl.cs(10,17): error CS0246: The type or namespace name 'WebView' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj]
+    27 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:06.17
+❌ BUILD FAILED.
+**********************
+PowerShell transcript end
+End time: 20251206164748
+**********************

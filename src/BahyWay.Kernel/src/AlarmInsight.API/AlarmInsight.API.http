@@ -1,0 +1,6 @@
+@AlarmInsight.API_HostAddress = http://localhost:5190
+
+GET {{AlarmInsight.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

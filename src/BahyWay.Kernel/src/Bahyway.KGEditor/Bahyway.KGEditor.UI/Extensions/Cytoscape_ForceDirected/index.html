@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Force-Directed Layout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1e1e1e; overflow: hidden; font-family: Arial, sans-serif; }
+        #cy { width: 100vw; height: 100vh; }
+        .stats {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.85);
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            border: 1px solid #00ff00;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <div class="stats">
+        <div class="title">🌐 Force-Directed Layout</div>
+        <div>Nodes: <span id="nodeCount">0</span></div>
+        <div>Edges: <span id="edgeCount">0</span></div>
+        <div>Layout: CoSE (Compound Spring Embedder)</div>
+    </div>
+
+    <script>
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': 'data(color)',
+                        'label': 'data(label)',
+                        'color': '#ffffff',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'font-size': '14px',
+                        'width': 50,
+                        'height': 50,
+                        'border-width': 3,
+                        'border-color': '#ffffff',
+                        'text-outline-width': 2,
+                        'text-outline-color': '#000000'
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    style: {
+                        'border-color': '#ffff00',
+                        'border-width': 5,
+                        'overlay-opacity': 0.3,
+                        'overlay-color': '#ffff00'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#999999',
+                        'target-arrow-color': '#999999',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'arrow-scale': 1.5
+                    }
+                },
+                {
+                    selector: 'edge:selected',
+                    style: {
+                        'line-color': '#ffff00',
+                        'target-arrow-color': '#ffff00',
+                        'width': 5
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'cose',
+                animate: true,
+                animationDuration: 1500,
+                randomize: false,
+                componentSpacing: 150,
+                nodeRepulsion: 10000,
+                idealEdgeLength: 150,
+                edgeElasticity: 150,
+                nestingFactor: 1.2,
+                gravity: 1,
+                numIter: 1000,
+                initialTemp: 200,
+                coolingFactor: 0.95,
+                minTemp: 1.0
+            }
+        });
+
+        function renderGraph(data) {
+            cy.elements().remove();
+            if (!data || !data.nodes) return;
+
+            data.nodes.forEach(node => {
+                cy.add({
+                    group: 'nodes',
+                    data: {
+                        id: node.id,
+                        label: node.label || node.id,
+                        color: node.color || '#3498db'
+                    }
+                });
+            });
+
+            if (data.edges) {
+                data.edges.forEach(edge => {
+                    cy.add({
+                        group: 'edges',
+                        data: {
+                            id: edge.id || `${edge.source}_${edge.target}`,
+                            source: edge.source,
+                            target: edge.target
+                        }
+                    });
+                });
+            }
+
+            cy.layout({
+                name: 'cose',
+                animate: true,
+                animationDuration: 1500
+            }).run();
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('nodeCount').textContent = cy.nodes().length;
+            document.getElementById('edgeCount').textContent = cy.edges().length;
+        }
+
+        cy.on('tap', 'node', function(evt) {
+            const node = evt.target;
+            console.log('Node selected:', node.data());
+        });
+
+        // Sample data for testing
+        const sampleData = {
+            nodes: [
+                { id: 'n1', label: 'Hub 1', color: '#3498db' },
+                { id: 'n2', label: 'Hub 2', color: '#3498db' },
+                { id: 'n3', label: 'Link 1', color: '#2ecc71' },
+                { id: 'n4', label: 'Satellite 1', color: '#e74c3c' }
+            ],
+            edges: [
+                { source: 'n1', target: 'n3' },
+                { source: 'n2', target: 'n3' },
+                { source: 'n3', target: 'n4' }
+            ]
+        };
+
+        renderGraph(sampleData);
+    </script>
+</body>
+</html>

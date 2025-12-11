@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-primary:
+    image: postgres:16
+    container_name: bahyway-postgres-primary
+    hostname: postgres-primary
+    environment:
+      POSTGRES_DB: alarminsight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    command: postgres -c wal_level=replica -c max_wal_senders=10 -c max_replication_slots=10
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+    networks:
+      - bahyway-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  bahyway-network:
+    driver: bridge
+
+volumes:
+  postgres-primary-data:

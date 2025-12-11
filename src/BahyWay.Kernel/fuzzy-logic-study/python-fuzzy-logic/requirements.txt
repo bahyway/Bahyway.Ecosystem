@@ -1,0 +1,21 @@
+# Python Dependencies for Fuzzy Logic Study Package
+
+# Core numerical computing
+numpy>=1.21.0
+
+# Fuzzy logic library
+scikit-fuzzy>=0.4.2
+
+# Visualization
+matplotlib>=3.4.0
+
+# Jupyter notebook support
+jupyter>=1.0.0
+ipykernel>=6.0.0
+notebook>=6.4.0
+
+# Optional: Enhanced IPython experience
+ipython>=7.20.0
+
+# Optional: For better plotting in notebooks
+seaborn>=0.11.0

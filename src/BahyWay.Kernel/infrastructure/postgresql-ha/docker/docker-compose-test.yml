@@ -1,0 +1,69 @@
+﻿version: '3.8'
+
+services:
+  postgres-primary:
+    image: postgres:16
+    container_name: bahyway-postgres-primary
+    hostname: postgres-primary
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: alarminsight
+    ports:
+      - "5432:5432"
+    command: postgres -c wal_level=replica -c max_wal_senders=10 -c max_replication_slots=10 -c hot_standby=on
+    networks:
+      - bahyway-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - primary-data:/var/lib/postgresql/data
+
+  postgres-replica:
+    image: postgres:16
+    container_name: bahyway-postgres-replica
+    hostname: postgres-replica
+    ports:
+      - "5433:5432"
+    environment:
+      PGDATA: /var/lib/postgresql/data
+    networks:
+      - bahyway-network
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    volumes:
+      - replica-data:/var/lib/postgresql/data
+    entrypoint: |
+      bash -c '
+      echo "Waiting for primary to be ready..."
+      until pg_isready -h postgres-primary -U postgres; do
+        sleep 2
+      done
+
+      echo "Primary is ready, creating base backup..."
+      rm -rf /var/lib/postgresql/data/*
+
+      PGPASSWORD=replicator123 pg_basebackup \
+        -h postgres-primary \
+        -U replicator \
+        -D /var/lib/postgresql/data \
+        -Fp -Xs -P -R
+
+      echo "Base backup complete, setting permissions..."
+      chown -R postgres:postgres /var/lib/postgresql/data
+      chmod 700 /var/lib/postgresql/data
+
+      echo "Starting replica..."
+      exec docker-entrypoint.sh postgres
+      '
+
+networks:
+  bahyway-network:
+    driver: bridge
+
+volumes:
+  primary-data:
+  replica-data:

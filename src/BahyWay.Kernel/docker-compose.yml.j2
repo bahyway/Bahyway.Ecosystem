@@ -1,0 +1,142 @@
+version: '3.8'
+
+# ============================================
+# BAHYWAY POSTGRESQL HA CLUSTER
+# Auto-generated from Ansible template
+# Generated: {{ ansible_date_time.iso8601 }}
+# ============================================
+
+services:
+  # ETCD - Distributed Configuration
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.11
+    container_name: {{ docker.containers.etcd }}
+    hostname: etcd
+    environment:
+      ETCD_NAME: etcd
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_ADVERTISE_CLIENT_URLS: http://etcd:2379
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd:2380
+      ETCD_INITIAL_CLUSTER: etcd=http://etcd:2380
+      ETCD_INITIAL_CLUSTER_STATE: new
+    networks:
+      - {{ docker.network_name }}
+    volumes:
+      - etcd-data:/etcd-data
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+
+  # PostgreSQL Primary
+  postgres-primary:
+    image: postgres:{{ postgres.version }}
+    container_name: {{ docker.containers.primary }}
+    hostname: postgres-primary
+    environment:
+      POSTGRES_DB: {{ postgres.database }}
+      POSTGRES_USER: {{ postgres.user }}
+      POSTGRES_PASSWORD: {{ postgres.password }}
+      POSTGRES_REPLICATION_USER: {{ postgres.replication.user }}
+      POSTGRES_REPLICATION_PASSWORD: {{ postgres.replication.password }}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./scripts/init-primary.sh:/docker-entrypoint-initdb.d/01-init-primary.sh:ro
+      - ./config/postgresql-primary.conf:/etc/postgresql/postgresql.conf:ro
+      - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    networks:
+      - {{ docker.network_name }}
+    ports:
+      - "{{ postgres.port_primary }}:5432"
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres.user }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Replica
+  postgres-replica:
+    image: postgres:{{ postgres.version }}
+    container_name: {{ docker.containers.replica }}
+    hostname: postgres-replica
+    environment:
+      POSTGRES_DB: {{ postgres.database }}
+      POSTGRES_USER: {{ postgres.user }}
+      POSTGRES_PASSWORD: {{ postgres.password }}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PRIMARY_HOST: postgres-primary
+      REPLICATION_USER: {{ postgres.replication.user }}
+      REPLICATION_PASSWORD: {{ postgres.replication.password }}
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+      - ./scripts/init-replica.sh:/docker-entrypoint-initdb.d/01-init-replica.sh:ro
+      - ./config/postgresql-replica.conf:/etc/postgresql/postgresql.conf:ro
+    networks:
+      - {{ docker.network_name }}
+    ports:
+      - "{{ postgres.port_replica }}:5432"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+
+  # Barman Backup
+  barman:
+    image: postgres:{{ postgres.version }}
+    container_name: {{ docker.containers.barman }}
+    hostname: barman
+    environment:
+      POSTGRES_PRIMARY_HOST: postgres-primary
+      POSTGRES_USER: {{ postgres.user }}
+      POSTGRES_PASSWORD: {{ postgres.password }}
+      BARMAN_BACKUP_USER: {{ barman.user }}
+      BARMAN_BACKUP_PASSWORD: {{ barman.password }}
+    volumes:
+      - barman-data:/var/lib/barman
+      - barman-wal:/var/lib/barman/wal
+      - ./scripts/init-barman.sh:/docker-entrypoint-initdb.d/01-init-barman.sh:ro
+    networks:
+      - {{ docker.network_name }}
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    command: tail -f /dev/null
+
+  # HAProxy Load Balancer
+  haproxy:
+    image: haproxy:2.9
+    container_name: {{ docker.containers.haproxy }}
+    hostname: haproxy
+    volumes:
+      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - {{ docker.network_name }}
+    ports:
+      - "{{ haproxy.port_primary }}:5000"
+      - "{{ haproxy.port_replica }}:5001"
+      - "{{ haproxy.port_stats }}:7000"
+    depends_on:
+      - postgres-primary
+      - postgres-replica
+
+networks:
+  {{ docker.network_name }}:
+    driver: bridge
+    name: {{ docker.network_name }}
+    ipam:
+      config:
+        - subnet: {{ docker.network_subnet }}
+
+volumes:
+  etcd-data:
+    name: bahyway-etcd-data
+  postgres-primary-data:
+    name: bahyway-postgres-primary-data
+  postgres-replica-data:
+    name: bahyway-postgres-replica-data
+  barman-data:
+    name: bahyway-barman-data
+  barman-wal:
+    name: bahyway-barman-wal

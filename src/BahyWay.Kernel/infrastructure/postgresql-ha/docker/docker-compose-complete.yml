@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres-primary:
+    image: postgres:16
+    container_name: bahyway-postgres-primary
+    hostname: postgres-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: alarminsight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=replica"
+      - "-c"
+      - "max_wal_senders=10"
+      - "-c"
+      - "max_replication_slots=10"
+      - "-c"
+      - "hot_standby=on"
+      - "-c"
+      - "listen_addresses=*"
+    networks:
+      - bahyway-network
+    volumes:
+      - primary-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  postgres-replica:
+    image: postgres:16
+    container_name: bahyway-postgres-replica
+    hostname: postgres-replica
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    networks:
+      - bahyway-network
+    volumes:
+      - replica-data:/var/lib/postgresql/data
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    # Use a simple init script mounted as volume
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        set -e
+        echo "Waiting for primary..."
+        until pg_isready -h postgres-primary -U postgres; do sleep 2; done
+
+        if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Creating base backup..."
+          rm -rf /var/lib/postgresql/data/*
+          PGPASSWORD=replicator123 pg_basebackup -h postgres-primary -U replicator -D /var/lib/postgresql/data -Fp -Xs -P -R
+
+          echo "Fixing permissions..."
+          chmod 0700 /var/lib/postgresql/data
+          chown -R postgres:postgres /var/lib/postgresql/data
+        fi
+
+        echo "Starting replica..."
+        exec gosu postgres postgres
+
+networks:
+  bahyway-network:
+    driver: bridge
+    name: bahyway-network
+
+volumes:
+  primary-data:
+    name: bahyway-primary-data
+  replica-data:
+    name: bahyway-replica-data

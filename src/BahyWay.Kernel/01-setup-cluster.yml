@@ -1,0 +1,174 @@
+﻿---
+# ============================================
+# BAHYWAY POSTGRESQL HA CLUSTER SETUP
+# Deploys PostgreSQL HA cluster with Docker
+# ============================================
+
+- name: Setup BahyWay PostgreSQL HA Cluster
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+    - ../vars/postgresql-config.yml
+
+  tasks:
+    # ============================================
+    # PREREQUISITES
+    # ============================================
+    - name: Check Docker is installed
+      command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: docker_check.rc != 0
+      tags: [check]
+
+    - name: Check Docker Compose is installed
+      command: docker-compose --version
+      register: compose_check
+      changed_when: false
+      failed_when: compose_check.rc != 0
+      tags: [check]
+
+    # ============================================
+    # CREATE DIRECTORY STRUCTURE
+    # ============================================
+    - name: Create infrastructure directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ base_dir }}/docker"
+        - "{{ base_dir }}/docker/scripts"
+        - "{{ base_dir }}/docker/config"
+        - "{{ base_dir }}/ansible/playbooks"
+        - "{{ base_dir }}/ansible/templates"
+        - "{{ base_dir }}/ansible/vars"
+        - "{{ base_dir }}/monitoring"
+        - "{{ base_dir }}/docs"
+      tags: [setup]
+
+    # ============================================
+    # GENERATE CONFIGURATION FILES
+    # ============================================
+    - name: Generate docker-compose.yml
+      template:
+        src: ../templates/docker-compose.yml.j2
+        dest: "{{ base_dir }}/docker/docker-compose.yml"
+        mode: '0644'
+      tags: [config]
+
+    - name: Generate .env file
+      template:
+        src: ../templates/.env.j2
+        dest: "{{ base_dir }}/docker/.env"
+        mode: '0600'
+      tags: [config]
+
+    - name: Generate PostgreSQL primary configuration
+      template:
+        src: ../templates/postgresql-primary.conf.j2
+        dest: "{{ base_dir }}/docker/config/postgresql-primary.conf"
+        mode: '0644'
+      tags: [config]
+
+    - name: Generate PostgreSQL replica configuration
+      template:
+        src: ../templates/postgresql-replica.conf.j2
+        dest: "{{ base_dir }}/docker/config/postgresql-replica.conf"
+        mode: '0644'
+      tags: [config]
+
+    - name: Generate pg_hba.conf
+      template:
+        src: ../templates/pg_hba.conf.j2
+        dest: "{{ base_dir }}/docker/config/pg_hba.conf"
+        mode: '0644'
+      tags: [config]
+
+    - name: Generate HAProxy configuration
+      template:
+        src: ../templates/haproxy.cfg.j2
+        dest: "{{ base_dir }}/docker/config/haproxy.cfg"
+        mode: '0644'
+      tags: [config]
+
+    # ============================================
+    # COPY SCRIPTS
+    # ============================================
+    - name: Copy initialization scripts
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: '0755'
+      loop:
+        - { src: '../docker/scripts/init-primary.sh', dest: '{{ base_dir }}/docker/scripts/init-primary.sh' }
+        - { src: '../docker/scripts/init-replica.sh', dest: '{{ base_dir }}/docker/scripts/init-replica.sh' }
+        - { src: '../docker/scripts/init-barman.sh', dest: '{{ base_dir }}/docker/scripts/init-barman.sh' }
+        - { src: '../docker/scripts/test-failover.sh', dest: '{{ base_dir }}/docker/scripts/test-failover.sh' }
+        - { src: '../docker/scripts/verify-replication.sh', dest: '{{ base_dir }}/docker/scripts/verify-replication.sh' }
+      tags: [scripts]
+
+    # ============================================
+    # DEPLOY CLUSTER
+    # ============================================
+    - name: Pull Docker images
+      command: docker-compose pull
+      args:
+        chdir: "{{ base_dir }}/docker"
+      tags: [deploy]
+
+    - name: Start PostgreSQL HA cluster
+      command: docker-compose up -d
+      args:
+        chdir: "{{ base_dir }}/docker"
+      tags: [deploy]
+
+    - name: Wait for primary to be healthy
+      command: docker exec bahyway-postgres-primary pg_isready -U postgres
+      register: primary_ready
+      until: primary_ready.rc == 0
+      retries: 30
+      delay: 2
+      tags: [deploy]
+
+    - name: Wait for replica to be healthy
+      command: docker exec bahyway-postgres-replica pg_isready -U postgres
+      register: replica_ready
+      until: replica_ready.rc == 0
+      retries: 30
+      delay: 2
+      tags: [deploy]
+
+    # ============================================
+    # VERIFY DEPLOYMENT
+    # ============================================
+    - name: Verify replication is working
+      command: "{{ base_dir }}/docker/scripts/verify-replication.sh"
+      register: replication_status
+      tags: [verify]
+
+    - name: Display replication status
+      debug:
+        msg: "{{ replication_status.stdout_lines }}"
+      tags: [verify]
+
+    # ============================================
+    # SUCCESS MESSAGE
+    # ============================================
+    - name: Display success message
+      debug:
+        msg:
+          - "✅ PostgreSQL HA Cluster deployed successfully!"
+          - ""
+          - "Connection endpoints:"
+          - "  • Primary (R/W):     localhost:5432 or localhost:5000 (via HAProxy)"
+          - "  • Replica (R/O):     localhost:5433 or localhost:5001 (via HAProxy)"
+          - "  • HAProxy Stats:     http://localhost:7000/stats"
+          - ""
+          - "Next steps:"
+          - "  1. Run: ansible-playbook 02-configure-replication.yml"
+          - "  2. Run: ansible-playbook 03-setup-barman.yml"
+          - "  3. Run: ansible-playbook 04-deploy-migrations.yml"
+      tags: [always]

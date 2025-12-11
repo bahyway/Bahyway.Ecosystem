@@ -1,0 +1,76 @@
+# ============================================
+# BAHYWAY HAPROXY CONFIGURATION
+# Auto-generated from Ansible template
+# Generated: {{ ansible_date_time.iso8601 }}
+# ============================================
+
+global
+    maxconn 4096
+    log stdout format raw local0 info
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log     global
+    mode    tcp
+    option  tcplog
+    option  dontlognull
+    retries 3
+    timeout connect {{ haproxy.check_timeout }}
+    timeout client  50000ms
+    timeout server  50000ms
+
+# ============================================
+# FRONTEND - PRIMARY (Read-Write)
+# Port {{ haproxy.port_primary }} - Routes to primary only
+# ============================================
+frontend postgres_primary_frontend
+    bind *:5000
+    mode tcp
+    default_backend postgres_primary_backend
+
+# ============================================
+# BACKEND - PRIMARY (Read-Write)
+# ============================================
+backend postgres_primary_backend
+    mode tcp
+    option httpchk
+    http-check expect status 200
+    default-server inter {{ haproxy.check_interval }} fall 3 rise 2
+    server primary postgres-primary:5432 check port 5432
+
+# ============================================
+# FRONTEND - REPLICA (Read-Only)
+# Port {{ haproxy.port_replica }} - Routes to replica for read queries
+# ============================================
+frontend postgres_replica_frontend
+    bind *:5001
+    mode tcp
+    default_backend postgres_replica_backend
+
+# ============================================
+# BACKEND - REPLICA (Read-Only)
+# Load balances across all replicas
+# ============================================
+backend postgres_replica_backend
+    mode tcp
+    option httpchk
+    http-check expect status 200
+    default-server inter {{ haproxy.check_interval }} fall 3 rise 2
+    server replica postgres-replica:5432 check port 5432
+
+# ============================================
+# STATS INTERFACE
+# Access at http://localhost:{{ haproxy.port_stats }}/stats
+# ============================================
+listen stats
+    bind *:7000
+    mode http
+    stats enable
+    stats uri /stats
+    stats refresh 30s
+    stats show-legends
+    stats show-node
+    stats admin if TRUE
+    stats auth admin:bahyway2025

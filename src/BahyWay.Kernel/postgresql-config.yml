@@ -1,0 +1,74 @@
+---
+# ============================================
+# BAHYWAY POSTGRESQL HA CONFIGURATION
+# Central configuration for all playbooks
+# ============================================
+
+# Base directory
+base_dir: "{{ playbook_dir }}/../../"
+
+# PostgreSQL Configuration
+postgres:
+  version: "16"
+  port_primary: 5432
+  port_replica: 5433
+  database: "alarminsight"
+  user: "postgres"
+  password: "StrongPassword123!"
+
+  # Replication settings
+  replication:
+    user: "replicator"
+    password: "ReplicatorPass456!"
+    slot_name: "replica_slot"
+    max_wal_senders: 10
+    wal_keep_size: "1GB"
+
+  # Performance tuning
+  memory:
+    shared_buffers: "256MB"
+    effective_cache_size: "1GB"
+    work_mem: "4MB"
+    maintenance_work_mem: "64MB"
+
+  # WAL configuration
+  wal:
+    level: "replica"
+    log_hints: "on"
+    keep_size: "1GB"
+    max_size: "2GB"
+    min_size: "1GB"
+
+# Barman Configuration
+barman:
+  user: "barman"
+  password: "BarmanPass789!"
+  retention_days: 7
+  backup_schedule: "0 2 * * *"  # Daily at 2 AM
+  compression: "gzip"
+
+# HAProxy Configuration
+haproxy:
+  port_primary: 5000
+  port_replica: 5001
+  port_stats: 7000
+  check_interval: "3s"
+  check_timeout: "5s"
+
+# Docker Configuration
+docker:
+  network_name: "bahyway-network"
+  network_subnet: "172.20.0.0/16"
+
+  containers:
+    etcd: "bahyway-etcd"
+    primary: "bahyway-postgres-primary"
+    replica: "bahyway-postgres-replica"
+    barman: "bahyway-barman"
+    haproxy: "bahyway-haproxy"
+
+# Monitoring Configuration
+monitoring:
+  check_interval: 60  # seconds
+  alert_lag_threshold: 60  # seconds
+  alert_email: "admin@bahyway.local"

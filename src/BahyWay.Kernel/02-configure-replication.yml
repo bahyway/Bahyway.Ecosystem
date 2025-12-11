@@ -1,0 +1,152 @@
+﻿---
+# ============================================
+# BAHYWAY POSTGRESQL REPLICATION CONFIGURATION
+# Configures streaming replication and slots
+# ============================================
+
+- name: Configure PostgreSQL Streaming Replication
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+    - ../vars/postgresql-config.yml
+
+  tasks:
+    # ============================================
+    # VERIFY CLUSTER STATUS
+    # ============================================
+    - name: Check primary node status
+      command: docker exec bahyway-postgres-primary pg_isready -U postgres
+      register: primary_status
+      changed_when: false
+      failed_when: primary_status.rc != 0
+      tags: [check]
+
+    - name: Check replica node status
+      command: docker exec bahyway-postgres-replica pg_isready -U postgres
+      register: replica_status
+      changed_when: false
+      failed_when: replica_status.rc != 0
+      tags: [check]
+
+    # ============================================
+    # CREATE REPLICATION SLOT
+    # ============================================
+    - name: Check if replication slot exists
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -t -c \
+        "SELECT slot_name FROM pg_replication_slots WHERE slot_name='{{ postgres.replication.slot_name }}';"
+      register: slot_check
+      changed_when: false
+      tags: [replication]
+
+    - name: Create replication slot if not exists
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -c \
+        "SELECT pg_create_physical_replication_slot('{{ postgres.replication.slot_name }}');"
+      when: slot_check.stdout | trim == ''
+      tags: [replication]
+
+    # ============================================
+    # VERIFY REPLICATION STATUS
+    # ============================================
+    - name: Get replication status
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -c \
+        "SELECT client_addr, application_name, state, sync_state, replay_lag
+         FROM pg_stat_replication;"
+      register: replication_status
+      changed_when: false
+      tags: [verify]
+
+    - name: Display replication status
+      debug:
+        msg: "{{ replication_status.stdout_lines }}"
+      tags: [verify]
+
+    # ============================================
+    # CHECK REPLICATION LAG
+    # ============================================
+    - name: Check replication lag
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -t -c \
+        "SELECT COALESCE(EXTRACT(EPOCH FROM replay_lag)::integer, 0)
+         FROM pg_stat_replication LIMIT 1;"
+      register: replication_lag
+      changed_when: false
+      tags: [verify]
+
+    - name: Verify replication lag is acceptable
+      assert:
+        that:
+          - replication_lag.stdout | trim | int < 60
+        fail_msg: "Replication lag is too high: {{ replication_lag.stdout | trim }}s"
+        success_msg: "Replication lag is acceptable: {{ replication_lag.stdout | trim }}s"
+      tags: [verify]
+
+    # ============================================
+    # TEST REPLICATION
+    # ============================================
+    - name: Create test table on primary
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -d {{ postgres.database }} -c \
+        "CREATE TABLE IF NOT EXISTS replication_test (
+           id SERIAL PRIMARY KEY,
+           test_data TEXT,
+           created_at TIMESTAMP DEFAULT NOW()
+         );"
+      tags: [test]
+
+    - name: Insert test data on primary
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -d {{ postgres.database }} -c \
+        "INSERT INTO replication_test (test_data) VALUES ('Replication test at ' || NOW());"
+      tags: [test]
+
+    - name: Wait for replication to sync
+      pause:
+        seconds: 5
+      tags: [test]
+
+    - name: Verify data replicated to replica
+      shell: |
+        docker exec bahyway-postgres-replica psql -U postgres -d {{ postgres.database }} -c \
+        "SELECT COUNT(*) FROM replication_test;"
+      register: replica_data
+      tags: [test]
+
+    - name: Verify replication is working
+      assert:
+        that:
+          - replica_data.stdout_lines | length > 0
+        fail_msg: "Data not replicated to replica"
+        success_msg: "Data successfully replicated to replica"
+      tags: [test]
+
+    # ============================================
+    # CLEANUP TEST DATA
+    # ============================================
+    - name: Drop test table
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -d {{ postgres.database }} -c \
+        "DROP TABLE IF EXISTS replication_test;"
+      tags: [test, cleanup]
+
+    # ============================================
+    # SUCCESS MESSAGE
+    # ============================================
+    - name: Display success message
+      debug:
+        msg:
+          - "✅ PostgreSQL replication configured successfully!"
+          - ""
+          - "Replication Status:"
+          - "  • Replication Slot: {{ postgres.replication.slot_name }}"
+          - "  • Replication Lag: {{ replication_lag.stdout | trim }}s"
+          - "  • Sync State: Streaming"
+          - ""
+          - "Next steps:"
+          - "  1. Run: ansible-playbook 03-setup-barman.yml"
+          - "  2. Run: ansible-playbook 04-deploy-migrations.yml"
+      tags: [always]

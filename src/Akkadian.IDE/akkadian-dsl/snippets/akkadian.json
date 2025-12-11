@@ -1,0 +1,54 @@
+{
+	"New Context": {
+		"prefix": "context",
+		"body": [
+			"CONTEXT ${1:Name} {",
+			"    $0",
+			"}"
+		],
+		"description": "Create a new Akkadian Context"
+	},
+	"New Identity": {
+		"prefix": "identity",
+		"body": [
+			"IDENTITY ${1:Name} {",
+			"    BUSINESS_KEY: ${2:Keys}",
+			"    SPATIAL_COLOR: GPS_to_RGB(lat, lon)",
+			"}"
+		],
+		"description": "Create a new Identity definition"
+	},
+	"New Hub": {
+		"prefix": "hub",
+		"body": [
+			"HUB: hub_${1:name} WITH {",
+			"    ${1:name}_key: UUID PRIMARY KEY,",
+			"    ${2:field}: VARCHAR(200)",
+			"}"
+		],
+		"description": "Create a Data Vault Hub"
+	},
+	"RAG Query": {
+		"prefix": "rag",
+		"body": [
+			"RAG_QUERY ${1:QueryName} {",
+			"    DESCRIPTION: \"${2:Query description}\"",
+			"    ",
+			"    RETRIEVAL {",
+			"        VECTOR_SEARCH: ${3:embedding} TOP_K ${4:10}",
+			"    }",
+			"    ",
+			"    GENERATION {",
+			"        LLM: 'gpt-4'",
+			"        PROMPT_TEMPLATE: \"${5:template_name}\"",
+			"        REQUIRED_CITATIONS: true",
+			"    }",
+			"    ",
+			"    AUGMENTATION {",
+			"        HYBRID_SEARCH: weighted_sum(vector=0.5, graph=0.5)",
+			"    }",
+			"}"
+		],
+		"description": "Create AI-powered GraphRAG query"
+	}
+}

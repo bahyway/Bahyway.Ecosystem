@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hierarchical Layout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1e1e1e; overflow: hidden; font-family: Arial, sans-serif; }
+        #cy { width: 100vw; height: 100vh; }
+        .stats {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.85);
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            border: 1px solid #2ecc71;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <div class="stats">
+        <div class="title">🌳 Hierarchical Tree</div>
+        <div>Nodes: <span id="nodeCount">0</span></div>
+        <div>Edges: <span id="edgeCount">0</span></div>
+        <div>Layout: Breadthfirst</div>
+    </div>
+
+    <script>
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': 'data(color)',
+                        'label': 'data(label)',
+                        'color': '#ffffff',
+                        'text-valign': 'bottom',
+                        'text-margin-y': 5,
+                        'font-size': '12px',
+                        'width': 45,
+                        'height': 45,
+                        'border-width': 2,
+                        'border-color': '#ffffff'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': '#2ecc71',
+                        'target-arrow-color': '#2ecc71',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'breadthfirst',
+                directed: true,
+                spacingFactor: 1.5,
+                animate: true,
+                animationDuration: 1000
+            }
+        });
+
+        function renderGraph(data) {
+            cy.elements().remove();
+            if (!data || !data.nodes) return;
+
+            data.nodes.forEach(node => {
+                cy.add({
+                    group: 'nodes',
+                    data: {
+                        id: node.id,
+                        label: node.label || node.id,
+                        color: node.color || '#2ecc71'
+                    }
+                });
+            });
+
+            if (data.edges) {
+                data.edges.forEach(edge => {
+                    cy.add({
+                        group: 'edges',
+                        data: {
+                            source: edge.source,
+                            target: edge.target
+                        }
+                    });
+                });
+            }
+
+            cy.layout({
+                name: 'breadthfirst',
+                directed: true,
+                spacingFactor: 1.5,
+                animate: true
+            }).run();
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('nodeCount').textContent = cy.nodes().length;
+            document.getElementById('edgeCount').textContent = cy.edges().length;
+        }
+
+        const sampleData = {
+            nodes: [
+                { id: 'root', label: 'Root', color: '#2ecc71' },
+                { id: 'child1', label: 'Child 1', color: '#27ae60' },
+                { id: 'child2', label: 'Child 2', color: '#27ae60' },
+                { id: 'child3', label: 'Child 3', color: '#27ae60' }
+            ],
+            edges: [
+                { source: 'root', target: 'child1' },
+                { source: 'root', target: 'child2' },
+                { source: 'root', target: 'child3' }
+            ]
+        };
+
+        renderGraph(sampleData);
+    </script>
+</body>
+</html>

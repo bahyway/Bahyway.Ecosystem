@@ -1,0 +1,30 @@
+[package]
+name = "fuzzy_logic"
+version = "0.1.0"
+edition = "2021"
+authors = ["Fuzzy Logic Study Package"]
+description = "A fuzzy logic library for learning and experimentation"
+
+[dependencies]
+# No external dependencies for the core library
+# This keeps the implementation simple and educational
+
+[dev-dependencies]
+# For testing
+approx = "0.5"
+
+[[example]]
+name = "temperature_controller"
+path = "examples/temperature_controller.rs"
+
+[[example]]
+name = "tipping_system"
+path = "examples/tipping_system.rs"
+
+[profile.dev]
+opt-level = 1  # Slight optimization for better performance during development
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

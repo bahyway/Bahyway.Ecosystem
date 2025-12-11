@@ -1,0 +1,52 @@
+**********************
+PowerShell transcript start
+Start time: 20251206181212
+Username: MSI\Bahaa
+RunAs User: MSI\Bahaa
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\Bahaa\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.4.0' -BundledModulesPath 'c:\Users\Bahaa\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.4.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\Bahaa\AppData\Roaming\Code\logs\20251205T233053\window3\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\Bahaa\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-47920-309086.json' -FeatureFlags @() 
+Process ID: 48664
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\Users\Bahaa\source\repos\BahyWay\BahyWay/guaranteed_run_log.txt
+🚑 STARTING EMERGENCY FIX TO LAUNCH APP...
+🔪 Removing broken WebView references...
+MethodInvocationException: C:\Users\Bahaa\source\repos\BahyWay\BahyWay\scripts\guaranteed-run2.ps1:28:1
+Line |
+  28 |  $xmlProj.Save($projFile)
+     |  ~~~~~~~~~~~~~~~~~~~~~~~~
+     | Exception calling "Save" with "1" argument(s): "Could not find a part of the path 'C:\Users\Bahaa\source\repos\BahyWay\BahyWay\scripts\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj'."
+MethodInvocationException: C:\Users\Bahaa\source\repos\BahyWay\BahyWay\scripts\guaranteed-run2.ps1:28:1
+Line |
+  28 |  $xmlProj.Save($projFile)
+     |  ~~~~~~~~~~~~~~~~~~~~~~~~
+     | Exception calling "Save" with "1" argument(s): "Could not find a part of the path
+     | 'C:\Users\Bahaa\source\repos\BahyWay\BahyWay\scripts\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj'."
+
+✅ Dependencies cleaned.
+📝 Rewriting WebGraphControl.cs to be compilation-safe...
+🧹 Cleaning...
+
+📦 Restoring...
+
+🚀 LAUNCHING...
+
+❌ STILL FAILED.
+**********************
+PowerShell transcript end
+End time: 20251206181229
+**********************

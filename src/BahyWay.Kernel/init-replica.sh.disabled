@@ -1,0 +1,39 @@
+﻿#!/bin/bash
+set -e
+
+echo "🚀 Initializing PostgreSQL Replica Node..."
+
+# Wait for primary to be ready
+until pg_isready -h $PRIMARY_HOST -U postgres; do
+  echo "⏳ Waiting for primary node to be ready..."
+  sleep 2
+done
+
+echo "✅ Primary node is ready!"
+
+# Stop PostgreSQL if running
+pg_ctl -D "$PGDATA" stop || true
+
+# Remove existing data
+rm -rf "$PGDATA"/*
+
+# Create base backup from primary
+echo "📦 Creating base backup from primary..."
+PGPASSWORD=$REPLICATION_PASSWORD pg_basebackup \
+    -h $PRIMARY_HOST \
+    -U $REPLICATION_USER \
+    -D "$PGDATA" \
+    -P \
+    -Xs \
+    -R
+
+# Create standby.signal file (indicates this is a replica)
+touch "$PGDATA/standby.signal"
+
+# Set proper permissions
+chmod 700 "$PGDATA"
+chown -R postgres:postgres "$PGDATA"
+
+echo "✅ Replica initialized successfully!"
+echo "📊 Streaming from: $PRIMARY_HOST"
+echo "📊 Replication user: $REPLICATION_USER"

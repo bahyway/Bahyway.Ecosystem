@@ -1,0 +1,163 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with Apache AGE
+  postgres:
+    image: apache/age:latest
+    container_name: bahyway-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bahyway}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bahyway_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-bahyway_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - bahyway-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bahyway}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    container_name: bahyway-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bahyway-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Users Service
+  users-service:
+    build:
+      context: ./backend-services/users-service
+      dockerfile: Dockerfile
+    container_name: bahyway-users-service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend-services/users-service/app:/app/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - bahyway-network
+    restart: unless-stopped
+
+  # Projects Service (placeholder for now)
+  projects-service:
+    build:
+      context: ./backend-services/projects-service
+      dockerfile: Dockerfile
+    container_name: bahyway-projects-service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./backend-services/projects-service/app:/app/app
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bahyway-network
+    restart: unless-stopped
+
+  # News Service (placeholder for now)
+  news-service:
+    build:
+      context: ./backend-services/news-service
+      dockerfile: Dockerfile
+    container_name: bahyway-news-service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+    volumes:
+      - ./backend-services/news-service/app:/app/app
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - bahyway-network
+    restart: unless-stopped
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend-apps/main-website
+      dockerfile: Dockerfile
+    container_name: bahyway-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_USERS_SERVICE_URL=http://localhost:8000
+      - NEXT_PUBLIC_PROJECTS_SERVICE_URL=http://localhost:8001
+      - NEXT_PUBLIC_NEWS_SERVICE_URL=http://localhost:8002
+    volumes:
+      - ./frontend-apps/main-website:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - users-service
+      - projects-service
+      - news-service
+    networks:
+      - bahyway-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: bahyway-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./devops/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./devops/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+      - users-service
+      - projects-service
+      - news-service
+    networks:
+      - bahyway-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  bahyway-network:
+    driver: bridge

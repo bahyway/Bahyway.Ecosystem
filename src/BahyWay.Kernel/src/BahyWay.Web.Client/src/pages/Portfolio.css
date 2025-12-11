@@ -1,0 +1,111 @@
+.portfolio-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.portfolio-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.portfolio-hero p {
+  font-size: 1.4rem;
+  opacity: 0.95;
+}
+
+.knowledge-section {
+  padding: 4rem 2rem;
+}
+
+.knowledge-section h2 {
+  font-size: 2.5rem;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.section-description {
+  text-align: center;
+  color: #718096;
+  font-size: 1.1rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.graph-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 30px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e0;
+}
+
+.architecture-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.detail-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.detail-card h3 {
+  color: #667eea;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.detail-card li {
+  padding: 0.75rem 0;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+  line-height: 1.6;
+}
+
+.detail-card li:last-child {
+  border-bottom: none;
+}
+
+.detail-card li::before {
+  content: "▸ ";
+  color: #667eea;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .portfolio-hero h1 {
+    font-size: 2rem;
+  }
+
+  .graph-legend {
+    flex-direction: column;
+    align-items: center;
+  }
+}

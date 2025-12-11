@@ -1,0 +1,24 @@
+﻿// Najaf Cemetery Sector Definition
+CONTEXT Wadi_Al_Salaam_North {
+}
+
+IDENTITY VisualGeoKey {
+    TYPE: SpatialColor3D
+    ALGORITHM: RGB_Infinite_Mapping
+}
+
+CONCEPT DeceasedPerson {
+    ID: VisualGeoKey
+
+    // Properties that will become Columns
+    PROPERTY FullName_Arabic
+    PROPERTY DateOfDeath
+    PROPERTY TribeName
+    PROPERTY PlotNumber
+}
+
+CONCEPT FamilyPlot {
+    ID: VisualGeoKey
+    PROPERTY FamilyName
+    PROPERTY Capacity
+}

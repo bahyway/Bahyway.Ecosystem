@@ -1,0 +1,189 @@
+﻿---
+# ============================================
+# BAHYWAY BARMAN BACKUP CONFIGURATION
+# Sets up continuous backup with PITR
+# ============================================
+
+- name: Setup Barman Backup Manager
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+    - ../vars/postgresql-config.yml
+
+  tasks:
+    # ============================================
+    # VERIFY BARMAN CONTAINER
+    # ============================================
+    - name: Check if Barman container is running
+      command: docker ps --filter "name=bahyway-barman" --format "{{.Names}}"
+      register: barman_container
+      changed_when: false
+      tags: [check]
+
+    - name: Verify Barman container exists
+      assert:
+        that:
+          - "'bahyway-barman' in barman_container.stdout"
+        fail_msg: "Barman container is not running. Run 01-setup-cluster.yml first."
+      tags: [check]
+
+    # ============================================
+    # CREATE BARMAN USER ON PRIMARY
+    # ============================================
+    - name: Create Barman user on primary
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -c \
+        "DO \$\$
+         BEGIN
+           IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '{{ barman.user }}') THEN
+             CREATE USER {{ barman.user }} WITH SUPERUSER ENCRYPTED PASSWORD '{{ barman.password }}';
+           END IF;
+         END
+         \$\$;"
+      tags: [setup]
+
+    # ============================================
+    # CREATE REPLICATION SLOT FOR BARMAN
+    # ============================================
+    - name: Check if Barman replication slot exists
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -t -c \
+        "SELECT slot_name FROM pg_replication_slots WHERE slot_name='barman_slot';"
+      register: barman_slot_check
+      changed_when: false
+      tags: [setup]
+
+    - name: Create Barman replication slot
+      shell: |
+        docker exec bahyway-postgres-primary psql -U postgres -c \
+        "SELECT pg_create_physical_replication_slot('barman_slot');"
+      when: barman_slot_check.stdout | trim == ''
+      tags: [setup]
+
+    # ============================================
+    # CONFIGURE BARMAN
+    # ============================================
+    - name: Install Barman in container
+      shell: |
+        docker exec bahyway-barman bash -c "
+          apt-get update -qq &&
+          apt-get install -y -qq barman barman-cli postgresql-client-16 > /dev/null 2>&1
+        "
+      tags: [install]
+
+    - name: Create Barman directories
+      shell: |
+        docker exec bahyway-barman bash -c "
+          mkdir -p /var/lib/barman/{incoming,errors,streaming} &&
+          mkdir -p /var/log/barman &&
+          mkdir -p /etc/barman.d
+        "
+      tags: [install]
+
+    - name: Create Barman global configuration
+      shell: |
+        docker exec bahyway-barman bash -c "cat > /etc/barman.conf <<EOF
+[barman]
+barman_user = barman
+configuration_files_directory = /etc/barman.d
+barman_home = /var/lib/barman
+log_file = /var/log/barman/barman.log
+log_level = INFO
+compression = {{ barman.compression }}
+minimum_redundancy = 1
+retention_policy = RECOVERY WINDOW OF {{ barman.retention_days }} DAYS
+EOF"
+      tags: [config]
+
+    - name: Create Barman server configuration
+      shell: |
+        docker exec bahyway-barman bash -c "cat > /etc/barman.d/primary.conf <<EOF
+[primary]
+description = 'BahyWay PostgreSQL Primary'
+conninfo = host=postgres-primary port=5432 user={{ barman.user }} dbname={{ postgres.database }} password={{ barman.password }}
+streaming_conninfo = host=postgres-primary port=5432 user={{ barman.user }} dbname={{ postgres.database }} password={{ barman.password }}
+backup_method = postgres
+streaming_archiver = on
+slot_name = barman_slot
+path_prefix = '/usr/lib/postgresql/16/bin'
+archiver = on
+EOF"
+      tags: [config]
+
+    # ============================================
+    # VERIFY BARMAN CONFIGURATION
+    # ============================================
+    - name: Test Barman connection to primary
+      shell: |
+        docker exec bahyway-barman barman check primary
+      register: barman_check
+      ignore_errors: yes
+      tags: [verify]
+
+    - name: Display Barman check results
+      debug:
+        msg: "{{ barman_check.stdout_lines }}"
+      tags: [verify]
+
+    # ============================================
+    # CREATE FIRST BACKUP
+    # ============================================
+    - name: Create initial backup
+      shell: |
+        docker exec bahyway-barman barman backup primary
+      register: first_backup
+      tags: [backup]
+
+    - name: Display backup results
+      debug:
+        msg: "{{ first_backup.stdout_lines }}"
+      tags: [backup]
+
+    # ============================================
+    # SETUP BACKUP SCHEDULE
+    # ============================================
+    - name: Create backup cron job
+      shell: |
+        docker exec bahyway-barman bash -c "
+          echo '{{ barman.backup_schedule }} barman backup primary' | crontab -
+        "
+      tags: [schedule]
+
+    # ============================================
+    # VERIFY BACKUP
+    # ============================================
+    - name: List backups
+      shell: |
+        docker exec bahyway-barman barman list-backup primary
+      register: backup_list
+      tags: [verify]
+
+    - name: Display backup list
+      debug:
+        msg: "{{ backup_list.stdout_lines }}"
+      tags: [verify]
+
+    # ============================================
+    # SUCCESS MESSAGE
+    # ============================================
+    - name: Display success message
+      debug:
+        msg:
+          - "✅ Barman backup configured successfully!"
+          - ""
+          - "Backup Configuration:"
+          - "  • Backup Method: Streaming (continuous)"
+          - "  • Retention: {{ barman.retention_days }} days"
+          - "  • Schedule: Daily at 2 AM"
+          - "  • Compression: {{ barman.compression }}"
+          - ""
+          - "Useful commands:"
+          - "  • List backups: docker exec bahyway-barman barman list-backup primary"
+          - "  • Create backup: docker exec bahyway-barman barman backup primary"
+          - "  • Restore: docker exec bahyway-barman barman recover primary <backup-id> /restore/path"
+          - ""
+          - "Next steps:"
+          - "  1. Run: ansible-playbook 04-deploy-migrations.yml"
+      tags: [always]

@@ -1,0 +1,342 @@
+.research-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.research-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.research-hero p {
+  font-size: 1.4rem;
+  opacity: 0.95;
+}
+
+.research-intro {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.intro-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.intro-content h2 {
+  color: #2d3748;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.intro-content p {
+  color: #4a5568;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.research-projects {
+  padding: 4rem 2rem;
+  background: #f7fafc;
+}
+
+.research-projects h2 {
+  color: #2d3748;
+  font-size: 2.5rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.research-project-card {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.research-project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.project-header {
+  margin-bottom: 2rem;
+}
+
+.project-title-area {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.project-icon {
+  font-size: 3.5rem;
+}
+
+.project-title-area h3 {
+  color: #2d3748;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.research-status {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-active-research {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-future-research {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  color: white;
+  font-style: italic;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.project-description {
+  color: #4a5568;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.project-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.detail-section h4 {
+  color: #667eea;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.detail-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.detail-section li {
+  padding: 0.5rem 0;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.detail-section li::before {
+  content: "→ ";
+  color: #667eea;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tech-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.project-meta {
+  display: flex;
+  gap: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+.meta-item {
+  color: #4a5568;
+  font-size: 1rem;
+}
+
+.meta-item strong {
+  color: #2d3748;
+}
+
+.github-link {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.github-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.research-areas {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.research-areas h2 {
+  color: #2d3748;
+  font-size: 2.5rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.areas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.area-card {
+  background: #f7fafc;
+  padding: 2rem;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.area-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+}
+
+.area-card h3 {
+  color: #2d3748;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.area-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.area-card li {
+  padding: 0.5rem 0;
+  color: #4a5568;
+}
+
+.area-card li::before {
+  content: "• ";
+  color: #667eea;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.collaboration-cta {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.cta-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cta-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  opacity: 0.95;
+  margin-bottom: 2rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+.cta-button.primary {
+  background: white;
+  color: #667eea;
+}
+
+.cta-button.secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .research-hero h1 {
+    font-size: 2rem;
+  }
+
+  .intro-content h2,
+  .research-projects h2,
+  .research-areas h2 {
+    font-size: 2rem;
+  }
+
+  .project-title-area {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .project-icon {
+    font-size: 2.5rem;
+  }
+
+  .project-meta {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .cta-button {
+    width: 100%;
+  }
+}

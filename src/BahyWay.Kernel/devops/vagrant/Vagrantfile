@@ -1,0 +1,59 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use Debian 12 (Bookworm)
+  config.vm.box = "debian/bookworm64"
+
+  # VM configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "bahyway-dev"
+    vb.memory = "4096"
+    vb.cpus = "2"
+  end
+
+  # Network configuration
+  config.vm.network "private_network", ip: "192.168.56.10"
+
+  # Port forwarding
+  config.vm.network "forwarded_port", guest: 80, host: 8080      # Nginx
+  config.vm.network "forwarded_port", guest: 3000, host: 3000    # Frontend
+  config.vm.network "forwarded_port", guest: 8000, host: 8000    # Users Service
+  config.vm.network "forwarded_port", guest: 8001, host: 8001    # Projects Service
+  config.vm.network "forwarded_port", guest: 8002, host: 8002    # News Service
+  config.vm.network "forwarded_port", guest: 5432, host: 5433    # PostgreSQL
+  config.vm.network "forwarded_port", guest: 6379, host: 6380    # Redis
+
+  # Synced folder
+  config.vm.synced_folder "../..", "/home/vagrant/BahyWay"
+
+  # Hostname
+  config.vm.hostname = "bahyway-dev"
+
+  # Provision with Ansible
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../ansible/provision.yml"
+    ansible.verbose = "v"
+    ansible.become = true
+  end
+
+  # Message after provisioning
+  config.vm.post_up_message = <<-MESSAGE
+    ╔═══════════════════════════════════════════════════════════════╗
+    ║                                                               ║
+    ║           BahyWay Development Environment Ready!              ║
+    ║                                                               ║
+    ║  SSH into VM:        vagrant ssh                              ║
+    ║  Start Minikube:     minikube start                           ║
+    ║  Deploy Platform:    cd /home/vagrant/BahyWay && \            ║
+    ║                      docker-compose -f docker-compose.website.yml up ║
+    ║                                                               ║
+    ║  Access URLs:                                                 ║
+    ║    Frontend:         http://localhost:3000                    ║
+    ║    Users API:        http://localhost:8000/docs               ║
+    ║    Projects API:     http://localhost:8001/docs               ║
+    ║    News API:         http://localhost:8002/docs               ║
+    ║                                                               ║
+    ╚═══════════════════════════════════════════════════════════════╝
+  MESSAGE
+end

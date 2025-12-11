@@ -1,0 +1,95 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Bahyway.KGEditor.UI.ViewModels"
+        xmlns:controls="using:Bahyway.KGEditor.UI.Controls"
+        x:Class="Bahyway.KGEditor.UI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Ontoway Professional" Width="1400" Height="800">
+
+    <Design.DataContext><vm:MainWindowViewModel/></Design.DataContext>
+
+    <Grid ColumnDefinitions="200, *, 250" RowDefinitions="*, 150">
+
+        <!-- LEFT: TOOLBOX -->
+        <Border Grid.Column="0" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,0,2,0">
+            <StackPanel Spacing="15" Margin="15">
+                <TextBlock Text="TEMPLATES" FontWeight="Bold" Foreground="#cccccc"/>
+                <Separator Background="#3F3F46" Height="2"/>
+        
+                <ComboBox Name="TemplateSelector" SelectionChanged="OnTemplateChanged">
+                    <ComboBoxItem Content="Cytoscape Standard" Tag="Cytoscape_Standard" IsSelected="True"/>
+                    <ComboBoxItem Content="Three.js 3D" Tag="ThreeJS_3D"/>
+                    <ComboBoxItem Content="D3.js Force" Tag="D3_Force"/>
+                </ComboBox>
+
+                <!-- TEMPLATE GALLERY BUTTON -->
+                <Button Name="ShowTemplatesBtn" 
+                        Click="ShowTemplateGallery"
+                        Background="#3498db"
+                        Foreground="White"
+                        Padding="10,8"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="4">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="📊" FontSize="16"/>
+                        <TextBlock Text="Show Templates" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+        
+                <Separator Background="#3F3F46" Height="2" Margin="0,10,0,10"/>
+        
+                <TextBlock Text="TOOLBOX" FontWeight="Bold" Foreground="#cccccc"/>
+                <Separator Background="#3F3F46" Height="2"/>
+
+                <StackPanel Spacing="5" Background="Transparent" PointerPressed="OnToolPointerPressed" Tag="Valve">
+                    <Ellipse Width="40" Height="40" Fill="#00FF00" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Valve" Foreground="White" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5" Background="Transparent" PointerPressed="OnToolPointerPressed" Tag="Sensor">
+                    <Ellipse Width="40" Height="40" Fill="#FF0000" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sensor" Foreground="White" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5" Background="Transparent" PointerPressed="OnToolPointerPressed" Tag="Concept">
+                    <Rectangle Width="40" Height="30" Fill="#3498db" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Concept" Foreground="White" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- CENTER: NATIVE CANVAS (Main Editor) -->
+        <controls:GraphCanvas Name="NativeCanvas" Grid.Column="1"/>
+
+        <!-- RIGHT: PROPERTIES -->
+        <Border Grid.Column="2" Background="#252526" BorderBrush="#3F3F46" BorderThickness="2,0,0,0">
+            <StackPanel Margin="15" Spacing="10">
+                <TextBlock Text="PROPERTIES" FontWeight="Bold" Foreground="#cccccc"/>
+                <Separator Background="#3F3F46" Height="2"/>
+
+                <StackPanel IsVisible="{Binding SelectedNode, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="Name" Foreground="Gray"/>
+                    <TextBox Text="{Binding SelectedNode.Name}" Background="#333" Foreground="White"/>
+
+                    <TextBlock Text="ID" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBox Text="{Binding SelectedNode.Id}" IsReadOnly="True" Background="#222" Foreground="Gray"/>
+
+                    <TextBlock Text="X Position" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBox Text="{Binding SelectedNode.X}" Background="#333" Foreground="White"/>
+
+                    <TextBlock Text="Y Position" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBox Text="{Binding SelectedNode.Y}" Background="#333" Foreground="White"/>
+                </StackPanel>
+
+                <TextBlock Text="Select a node to edit" Foreground="Gray" 
+                          IsVisible="{Binding SelectedNode, Converter={x:Static ObjectConverters.IsNull}}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- BOTTOM: CONSOLE -->
+        <Border Grid.Row="1" Grid.ColumnSpan="3" Background="#1e1e1e" BorderBrush="#3F3F46" BorderThickness="0,2,0,0">
+            <TextBlock Text="{Binding ConsoleLog}" Foreground="#00FF00" FontFamily="Consolas" Margin="10"/>
+        </Border>
+    </Grid>
+</Window>

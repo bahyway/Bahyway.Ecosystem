@@ -1,0 +1,52 @@
+**********************
+PowerShell transcript start
+Start time: 20251205123526
+Username: MSI\Bahaa
+RunAs User: MSI\Bahaa
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll
+Process ID: 47620
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\Users\Bahaa\source\repos\BahyWay\BahyWay/repair_log.txt
+🔍 STARTING REPAIR PROCESS...
+📝 Repairing GraphCanvas.cs...
+📝 Repairing MainWindow.axaml...
+📝 Repairing MainWindow.axaml.cs...
+🧹 Cleaning previous build artifacts...
+
+Build succeeded in 21.7s
+🔨 Building Project...
+02: Dereference of a possibly null reference.
+    C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS86
+00: Converting null literal or possible null value to non-nullable type.
+    C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(71,26): warning CS86
+02: Dereference of a possibly null reference.
+    C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS86
+00: Converting null literal or possible null value to non-nullable type.
+    C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.SharedKernel\Compiler\AkkadianParser.cs(76,26): warning CS86
+02: Dereference of a possibly null reference.
+  Bahyway.KGEditor.Application net8.0 succeeded (1.2s) → src\Bahyway.KGEditor\Bahyway.KGEditor.Application\bin\Debug\net
+8.0\Bahyway.KGEditor.Application.dll
+  Bahyway.KGEditor.Infrastructure net8.0 succeeded (1.3s) → src\Bahyway.KGEditor\Bahyway.KGEditor.Infrastructure\bin\Deb
+ug\net8.0\Bahyway.KGEditor.Infrastructure.dll
+  Bahyway.KGEditor.UI net8.0 failed with 1 error(s) (4.7s)
+    C:\Users\Bahaa\source\repos\BahyWay\BahyWay\src\Bahyway.KGEditor\Bahyway.KGEditor.UI\Controls\GraphCanvas.cs(13,45):
+ error CS0266: Cannot implicitly convert type 'Avalonia.Media.IImmutableSolidColorBrush' to 'Avalonia.Media.Brush'. An e
+xplicit conversion exists (are you missing a cast?)
+
+Build failed with 1 error(s) and 23 warning(s) in 21.6s
+❌ Build Failed. Check the log file below.
+**********************
+PowerShell transcript end
+End time: 20251205123612
+**********************

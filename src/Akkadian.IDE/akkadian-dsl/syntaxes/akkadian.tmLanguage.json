@@ -1,0 +1,64 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Akkadian",
+	"patterns": [
+		{ "include": "#comments" },
+		{ "include": "#keywords" },
+		{ "include": "#blocks" },
+		{ "include": "#types" },
+		{ "include": "#strings" },
+		{ "include": "#numbers" }
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.akkadian",
+				"match": "\\b(CONTEXT|IDENTITY|STORAGE|VECTORIZATION|COMMAND|VALIDATION|EXECUTION)\\b"
+			},
+			{
+				"name": "keyword.other.akkadian",
+				"match": "\\b(WITH|USING|THRESHOLD|PRIMARY KEY|UNIQUE|temporal_tracking|CHECK|INSERT_EVENT)\\b"
+			}]
+		},
+		"blocks": {
+			"patterns": [{
+				"name": "support.class.akkadian",
+				"match": "\\b(HUB|SATELLITE|LINK|MODEL|EMBEDDINGS)\\b"
+			},
+			{
+				"name": "support.function.akkadian",
+				"match": "\\b(BUSINESS_KEY|FUZZY_MATCH|SPATIAL_COLOR)\\b"
+			}]
+		},
+		"types": {
+			"patterns": [{
+				"name": "support.type.akkadian",
+				"match": "\\b(UUID|VARCHAR|INT|DECIMAL|TIMESTAMP|BOOLEAN)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.single.akkadian",
+			"begin": "'",
+			"end": "'",
+			"patterns": [
+				{
+					"name": "constant.character.escape.akkadian",
+					"match": "\\\\."
+				}
+			]
+		},
+		"numbers": {
+			"name": "constant.numeric.akkadian",
+			"match": "\\b\\d+(\\.\\d+)?\\b"
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.akkadian",
+					"match": "//.*$"
+				}
+			]
+		}
+	},
+	"scopeName": "source.akkadian"
+}

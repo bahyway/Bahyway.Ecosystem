@@ -1,0 +1,26 @@
+﻿#!/bin/bash
+set -e
+
+echo "🚀 Initializing PostgreSQL Primary Node..."
+
+# Create replication user
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    -- Create replication user
+    CREATE USER $POSTGRES_REPLICATION_USER WITH REPLICATION ENCRYPTED PASSWORD '$POSTGRES_REPLICATION_PASSWORD';
+
+    -- Grant necessary permissions
+    GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_REPLICATION_USER;
+
+    -- Create replication slot for replica
+    SELECT pg_create_physical_replication_slot('replica_slot');
+
+    -- Create barman user for backups
+    CREATE USER barman WITH SUPERUSER ENCRYPTED PASSWORD 'barman123';
+
+    -- Show replication status
+    SELECT * FROM pg_stat_replication;
+EOSQL
+
+echo "✅ Primary node initialized successfully!"
+echo "📊 Replication user: $POSTGRES_REPLICATION_USER"
+echo "📊 Replication slot: replica_slot created"

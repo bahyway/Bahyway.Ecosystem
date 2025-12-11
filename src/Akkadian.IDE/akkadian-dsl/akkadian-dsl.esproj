@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.128-alpha">
+  <PropertyGroup>
+    <!-- This tells VS how to build it -->
+    <StartupCommand>vsce package</StartupCommand>
+    <!-- This tells VS where the output goes -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\out</BuildOutputFolder>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- This hides the vsix file from being tracked as source code in VS -->
+    <None Include="*.vsix" />
+  </ItemGroup>
+</Project>

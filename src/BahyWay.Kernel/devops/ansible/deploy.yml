@@ -1,0 +1,70 @@
+---
+- name: Deploy BahyWay Platform to Kubernetes
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    k8s_namespace: bahyway
+    manifests_dir: "{{ playbook_dir }}/../kubernetes-manifests"
+
+  tasks:
+    - name: Ensure kubectl is available
+      command: kubectl version --client
+      register: kubectl_version
+      failed_when: kubectl_version.rc != 0
+
+    - name: Create namespace
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/namespace.yaml"
+
+    - name: Apply ConfigMap
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/configmap.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Apply Secrets
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/secret.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Deploy PostgreSQL
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/postgres-deployment.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Deploy Redis
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/redis-deployment.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Wait for PostgreSQL to be ready
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: postgres-deployment
+        namespace: "{{ k8s_namespace }}"
+      register: postgres_deployment
+      until: postgres_deployment.resources[0].status.readyReplicas | default(0) >= 1
+      retries: 30
+      delay: 10
+
+    - name: Deploy Users Service
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/users-service/deployment.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Apply Ingress
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ manifests_dir }}/ingress.yaml"
+        namespace: "{{ k8s_namespace }}"
+
+    - name: Display deployment status
+      debug:
+        msg: "BahyWay platform deployed successfully to namespace {{ k8s_namespace }}"

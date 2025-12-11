@@ -1,0 +1,41 @@
+{
+  "name": "akkadian-dsl",
+  "displayName": "Akkadian DSL",
+  "description": "Proprietary language support for Akkadian DSL v3.0 (beeMDM)",
+  "version": "0.0.1",
+  "publisher": "Bahyway",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahyway/beeMDM.git"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "akkadian",
+        "aliases": [
+          "akkadian",
+          "akkadian"
+        ],
+        "extensions": [
+          ".akk"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "akkadian",
+        "scopeName": "source.akkadian",
+        "path": "./syntaxes/akkadian.tmLanguage.json"
+      }
+    ]
+  }
+}

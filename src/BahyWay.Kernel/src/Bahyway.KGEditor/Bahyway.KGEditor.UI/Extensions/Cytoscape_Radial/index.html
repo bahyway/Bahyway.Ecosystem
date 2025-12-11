@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Radial Layout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1e1e1e; overflow: hidden; }
+        #cy { width: 100vw; height: 100vh; }
+        .stats {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.85);
+            color: #f39c12;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            border: 1px solid #f39c12;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <div class="stats">
+        <div class="title">⭕ Radial Layout</div>
+        <div>Nodes: <span id="nodeCount">0</span></div>
+        <div>Edges: <span id="edgeCount">0</span></div>
+        <div>Layout: Concentric Circles</div>
+    </div>
+
+    <script>
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': 'data(color)',
+                        'label': 'data(label)',
+                        'color': '#ffffff',
+                        'font-size': '12px',
+                        'width': 40,
+                        'height': 40,
+                        'border-width': 2,
+                        'border-color': '#ffffff'
+                    }
+                },
+                {
+                    selector: 'node[id = "center"]',
+                    style: {
+                        'width': 60,
+                        'height': 60,
+                        'background-color': '#e74c3c',
+                        'border-width': 4
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': '#f39c12',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'concentric',
+                animate: true,
+                animationDuration: 1000,
+                spacingFactor: 2,
+                concentric: function(node) {
+                    return node.id() === 'center' ? 2 : 1;
+                },
+                levelWidth: function() { return 1; }
+            }
+        });
+
+        function renderGraph(data) {
+            cy.elements().remove();
+            if (!data || !data.nodes) return;
+
+            data.nodes.forEach(node => {
+                cy.add({
+                    group: 'nodes',
+                    data: {
+                        id: node.id,
+                        label: node.label || node.id,
+                        color: node.color || '#f39c12'
+                    }
+                });
+            });
+
+            if (data.edges) {
+                data.edges.forEach(edge => {
+                    cy.add({
+                        group: 'edges',
+                        data: {
+                            source: edge.source,
+                            target: edge.target
+                        }
+                    });
+                });
+            }
+
+            cy.layout({
+                name: 'concentric',
+                animate: true,
+                animationDuration: 1000,
+                spacingFactor: 2,
+                concentric: function(node) {
+                    return node.degree();
+                }
+            }).run();
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('nodeCount').textContent = cy.nodes().length;
+            document.getElementById('edgeCount').textContent = cy.edges().length;
+        }
+
+        const sampleData = {
+            nodes: [
+                { id: 'center', label: 'Center', color: '#e74c3c' },
+                { id: 'n1', label: 'Node 1', color: '#f39c12' },
+                { id: 'n2', label: 'Node 2', color: '#f39c12' },
+                { id: 'n3', label: 'Node 3', color: '#f39c12' }
+            ],
+            edges: [
+                { source: 'center', target: 'n1' },
+                { source: 'center', target: 'n2' },
+                { source: 'center', target: 'n3' }
+            ]
+        };
+
+        renderGraph(sampleData);
+    </script>
+</body>
+</html>

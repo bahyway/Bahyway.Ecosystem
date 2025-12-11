@@ -1,0 +1,71 @@
+.about-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.about-lead {
+  font-size: 1.4rem;
+  opacity: 0.95;
+}
+
+.about-content {
+  padding: 4rem 2rem;
+}
+
+.about-grid {
+  display: grid;
+  gap: 3rem;
+}
+
+.about-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.about-section h2 {
+  color: #667eea;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.about-section p {
+  color: #4a5568;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.tech-list, .projects-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.tech-list li, .projects-list li {
+  padding: 0.75rem 0;
+  color: #4a5568;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 1.05rem;
+}
+
+.tech-list li:last-child, .projects-list li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .about-hero h1 {
+    font-size: 2rem;
+  }
+
+  .about-lead {
+    font-size: 1.1rem;
+  }
+}
