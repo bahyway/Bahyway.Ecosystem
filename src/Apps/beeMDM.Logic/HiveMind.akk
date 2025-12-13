@@ -1,0 +1,67 @@
+// ============================================================
+// beeMDM Module: The Hive Mind
+// ============================================================
+
+CONTEXT beeMDM_Knowledge {
+
+    VECTORIZATION {
+        // Standard HuggingFace model
+        MODEL: 'sentence-transformers/all-MiniLM-L6-v2'
+
+        EMBEDDINGS {
+            data_asset_profile: [
+                asset_name,
+                business_description,
+                technical_schema,
+                data_steward_name
+            ]
+            governance_policy: [
+                policy_name,
+                compliance_text,
+                jurisdiction
+            ]
+        }
+    }
+
+    RAG_QUERY FindSensitiveData {
+        DESCRIPTION: "Locate PII and GDPR sensitive assets"
+
+        RETRIEVAL {
+            VECTOR_SEARCH: data_asset_profile TOP_K 20
+
+            GRAPH_TRAVERSE: 5_hops FROM data_asset
+                VIA: [FLOWS_TO, TRANSFORMED_BY, CONSUMED_BY_APP]
+
+            TEMPORAL_WINDOW: last_30_days
+        }
+
+        GENERATION {
+            // UPDATED: Using a generic enterprise model placeholder
+            LLM: 'gpt-4'
+            PROMPT_TEMPLATE: "governance_risk_assessor"
+            REQUIRED_CITATIONS: true
+        }
+
+        AUGMENTATION {
+            HYBRID_SEARCH: weighted_sum(
+                vector=0.6,
+                graph=0.4
+            )
+        }
+    }
+
+    RAG_QUERY ImpactAnalysis {
+        DESCRIPTION: "Analyze downstream dependencies"
+
+        RETRIEVAL {
+            GRAPH_TRAVERSE: 10_hops FROM source_column
+                VIA: [feed, etl_job, report_widget]
+        }
+
+        GENERATION {
+            // UPDATED: Using a generic enterprise model placeholder
+            LLM: 'gpt-4'
+            PROMPT_TEMPLATE: "impact_analysis_report"
+        }
+    }
+}

@@ -16,6 +16,7 @@ contextBody
     | ragQuery
     | presentation
     | ruleSet
+    | metaAlgorithmics  // <--- ADDED HERE
     ;
 
 // --- IDENTITY BLOCK (The Engine for "Billions of Colors") ---
@@ -45,6 +46,23 @@ ruleBody
     | 'OUTPUT' ':' IDENTIFIER
     | 'LOGIC' ':' STRING  // e.g. "IF distance IS close THEN match IS high"
     | 'ALGORITHM' ':' IDENTIFIER // e.g. MAMDANI, SUGENO
+    ;
+
+// --- META ALGORITHMICS BLOCK (Parallelism) ---
+// This controls AKKA.NET Actors and Scaling Strategies
+metaAlgorithmics: 'META_ALGORITHMICS' '{' metaBody* '}';
+
+metaBody
+    : 'EXECUTION_MODEL' ':' IDENTIFIER          // e.g. actor_based
+    | 'ACTORS' '{' actorDef* '}'                // Define pools
+    | 'PARALLEL_PATTERNS' '{' patternDef* '}'   // Define Map/Reduce strategies
+    ;
+
+actorDef: IDENTIFIER ':' '{' configProp* '}';
+patternDef: IDENTIFIER ':' '{' configProp* '}';
+
+configProp
+    : IDENTIFIER ':' (IDENTIFIER | INT | expression)
     ;
 
 // --- STORAGE BLOCK ---

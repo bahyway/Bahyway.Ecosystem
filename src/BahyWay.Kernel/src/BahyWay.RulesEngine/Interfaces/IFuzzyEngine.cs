@@ -1,35 +1,25 @@
-namespace BahyWay.RulesEngine.Interfaces;
+using BahyWay.RulesEngine.Models; // <--- IMPORTANT: Point this to where FuzzyRuleSet.cs lives
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Main interface for fuzzy inference engine
-/// </summary>
-public interface IFuzzyEngine
+namespace BahyWay.RulesEngine.Interfaces
 {
-    /// <summary>
-    /// Evaluates fuzzy rules with given inputs
-    /// </summary>
-    /// <param name="ruleSetName">Name of the rule set to evaluate</param>
-    /// <param name="inputs">Dictionary of input variable names and their crisp values</param>
-    /// <returns>Dictionary of output variable names and their defuzzified values</returns>
-    Task<Dictionary<string, double>> EvaluateAsync(string ruleSetName, Dictionary<string, double> inputs);
+    public interface IFuzzyEngine
+    {
+        // CRUD for Rules
+        void AddRuleSet(string name, FuzzyRuleSet ruleSet);
+        FuzzyRuleSet GetRuleSet(string name);
+        IEnumerable<string> GetRuleSetNames();
 
-    /// <summary>
-    /// Synchronous evaluation of fuzzy rules
-    /// </summary>
-    Dictionary<string, double> Evaluate(string ruleSetName, Dictionary<string, double> inputs);
+        // Evaluation Methods
+        /// <summary>
+        /// Evaluates fuzzy rules with given inputs (Async)
+        /// </summary>
+        Task<Dictionary<string, double>> EvaluateAsync(string ruleSetName, Dictionary<string, double> inputs);
 
-    /// <summary>
-    /// Adds a rule set to the engine
-    /// </summary>
-    void AddRuleSet(string name, FuzzyRuleSet ruleSet);
-
-    /// <summary>
-    /// Gets a rule set by name
-    /// </summary>
-    FuzzyRuleSet? GetRuleSet(string name);
-
-    /// <summary>
-    /// Gets all rule set names
-    /// </summary>
-    IEnumerable<string> GetRuleSetNames();
+        /// <summary>
+        /// Synchronous evaluation of fuzzy rules
+        /// </summary>
+        Dictionary<string, double> Evaluate(string ruleSetName, Dictionary<string, double> inputs);
+    }
 }

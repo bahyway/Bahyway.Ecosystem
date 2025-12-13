@@ -169,4 +169,29 @@ public class FuzzyEngine : IFuzzyEngine
 
         return outputs;
     }
+
+    public void AddRuleSet(string name, FuzzyRuleSet ruleSet)
+    {
+        throw new NotImplementedException();
+    }
+
+    FuzzyRuleSet? IFuzzyEngine.GetRuleSet(string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddRuleSet(string name, FuzzyRuleSet ruleSet)
+    {
+        throw new NotImplementedException();
+    }
+
+    FuzzyRuleSet? IFuzzyEngine.GetRuleSet(string name)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddRuleSet(string name, FuzzyRuleSet ruleSet)
+    {
+        throw new NotImplementedException();
+    }
 }

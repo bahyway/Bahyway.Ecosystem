@@ -41,36 +41,75 @@ namespace Akkadian.Core.Generators
             return sb.ToString();
         }
 
+        //private string GenerateClass(TableNode table)
+        //{
+        //    var sb = new StringBuilder();
+        //    string className = ToPascalCase(table.Name);
+
+        //    sb.AppendLine($"    /// <summary>");
+        //    sb.AppendLine($"    /// Represents the {table.Type} : {table.Name}");
+        //    sb.AppendLine($"    /// </summary>");
+        //    sb.AppendLine($"    public class {className}");
+        //    sb.AppendLine("    {");
+
+        //    // 1. User Defined Properties
+        //    foreach (var col in table.Columns)
+        //    {
+        //        sb.AppendLine($"        public {MapToCSharpType(col.DataType)} {ToPascalCase(col.Name)} {{ get; set; }}");
+        //    }
+
+        //    // 2. Standard Audit Properties
+        //    sb.AppendLine($"        public DateTime LoadDate {{ get; set; }}");
+        //    sb.AppendLine($"        public string RecordSource {{ get; set; }}");
+
+        //    // 3. Temporal Properties
+        //    if (table.HasTemporalTracking)
+        //    {
+        //        sb.AppendLine($"        public DateTime ValidFrom {{ get; set; }}");
+        //        sb.AppendLine($"        public DateTime? ValidTo {{ get; set; }}");
+        //        sb.AppendLine($"        public bool IsCurrent {{ get; set; }}");
+        //    }
+
+        //    sb.AppendLine("    }");
+        //    return sb.ToString();
+        //}
         private string GenerateClass(TableNode table)
         {
             var sb = new StringBuilder();
             string className = ToPascalCase(table.Name);
 
             sb.AppendLine($"    /// <summary>");
-            sb.AppendLine($"    /// Represents the {table.Type} : {table.Name}");
+            sb.AppendLine($"    /// Optimized Data Structure for {table.Name}");
+            sb.AppendLine($"    /// Memory Layout: Sequential (Stack/Array optimized)");
             sb.AppendLine($"    /// </summary>");
-            sb.AppendLine($"    public class {className}");
-            sb.AppendLine("    {");
+
+            // OPTIMIZATION 1: Use 'readonly record struct'
+            // This behaves like C++ POD (Plain Old Data) types.
+            sb.AppendLine($"    public readonly record struct {className}");
+            sb.AppendLine("    (");
+
+            var properties = new List<string>();
 
             // 1. User Defined Properties
             foreach (var col in table.Columns)
             {
-                sb.AppendLine($"        public {MapToCSharpType(col.DataType)} {ToPascalCase(col.Name)} {{ get; set; }}");
+                properties.Add($"        {MapToCSharpType(col.DataType)} {ToPascalCase(col.Name)}");
             }
 
             // 2. Standard Audit Properties
-            sb.AppendLine($"        public DateTime LoadDate {{ get; set; }}");
-            sb.AppendLine($"        public string RecordSource {{ get; set; }}");
+            properties.Add($"        DateTime LoadDate");
+            properties.Add($"        string RecordSource");
 
             // 3. Temporal Properties
             if (table.HasTemporalTracking)
             {
-                sb.AppendLine($"        public DateTime ValidFrom {{ get; set; }}");
-                sb.AppendLine($"        public DateTime? ValidTo {{ get; set; }}");
-                sb.AppendLine($"        public bool IsCurrent {{ get; set; }}");
+                properties.Add($"        DateTime ValidFrom");
+                properties.Add($"        DateTime? ValidTo");
+                properties.Add($"        bool IsCurrent");
             }
 
-            sb.AppendLine("    }");
+            sb.AppendLine(string.Join(",\n", properties));
+            sb.AppendLine("    );");
             return sb.ToString();
         }
 
