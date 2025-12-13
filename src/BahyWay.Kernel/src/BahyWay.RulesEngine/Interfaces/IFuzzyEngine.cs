@@ -1,6 +1,6 @@
-using BahyWay.RulesEngine.Models; // <--- IMPORTANT: Point this to where FuzzyRuleSet.cs lives
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BahyWay.RulesEngine.Core; // <--- Pointing to where FuzzyRuleSet lives
 
 namespace BahyWay.RulesEngine.Interfaces
 {
@@ -8,18 +8,14 @@ namespace BahyWay.RulesEngine.Interfaces
     {
         // CRUD for Rules
         void AddRuleSet(string name, FuzzyRuleSet ruleSet);
-        FuzzyRuleSet GetRuleSet(string name);
+
+        // Note: Added '?' to allow null return, fixing CS0738
+        FuzzyRuleSet? GetRuleSet(string name);
+
         IEnumerable<string> GetRuleSetNames();
 
         // Evaluation Methods
-        /// <summary>
-        /// Evaluates fuzzy rules with given inputs (Async)
-        /// </summary>
         Task<Dictionary<string, double>> EvaluateAsync(string ruleSetName, Dictionary<string, double> inputs);
-
-        /// <summary>
-        /// Synchronous evaluation of fuzzy rules
-        /// </summary>
         Dictionary<string, double> Evaluate(string ruleSetName, Dictionary<string, double> inputs);
     }
 }
