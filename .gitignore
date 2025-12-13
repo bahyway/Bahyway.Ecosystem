@@ -482,3 +482,18 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# --- .NET ---
+bin/
+obj/
+.vs/
+*.user
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# --- VS Code ---
+.vscode/
