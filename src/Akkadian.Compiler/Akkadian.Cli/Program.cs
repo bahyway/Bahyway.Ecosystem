@@ -109,7 +109,7 @@ namespace Akkadian.Cli
             }
 
             Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
+            // Console.ReadKey();
         }
                 
         static string GetSampleCode()

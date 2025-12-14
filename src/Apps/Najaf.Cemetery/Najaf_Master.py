@@ -12,14 +12,14 @@ from typing import List, Dict
 app = FastAPI(title="Akkadian Vector Service")
 
 print('Loading Model: ...')
-model_beeMDM_Knowledge = SentenceTransformer('')
+model_Najaf_Cemetery_Master = SentenceTransformer('')
 
 class EmbeddingRequest(BaseModel):
     text: str
 
-@app.post('/beemdm_knowledge/embed')
-async def embed_beemdm_knowledge(req: EmbeddingRequest):
-    embeddings = model_beeMDM_Knowledge.encode(req.text)
+@app.post('/najaf_cemetery_master/embed')
+async def embed_najaf_cemetery_master(req: EmbeddingRequest):
+    embeddings = model_Najaf_Cemetery_Master.encode(req.text)
     return { 'vector': embeddings.tolist() }
 
 if __name__ == '__main__':

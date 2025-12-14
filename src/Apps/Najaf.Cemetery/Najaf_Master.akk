@@ -1,0 +1,51 @@
+CONTEXT Najaf_Cemetery_Master {
+
+    // 1. IDENTITY: Semantic Clustering (Tribal Logic)
+    IDENTITY DeceasedIdentity {
+        SPATIAL_ID {
+            ALGORITHM: SEMANTIC_COMPOSITE_64
+            // Groups people by Tribe first, then Location
+            DIMENSIONS: [TribeHash, SectorID, PlotNumber]
+            PRECISION: 64
+        }
+
+        FUZZY_RESOLUTION {
+            // Arabic Name Matching
+            MATCH [full_name_arabic] USING Levenshtein THRESHOLD 0.85
+        }
+    }
+
+    // 2. STORAGE: Optimized for Millions of Graves
+    STORAGE DataVault {
+
+        // HUB: Physically Clustered by Tribe on the Hard Drive
+        HUB: hub_deceased_record
+            WITH PARTITION_BY: LIST(sector_id)
+            WITH CLUSTERED_BY: tribal_color_id
+        {
+            tribal_color_id: BIGINT PRIMARY KEY,
+            civil_id: VARCHAR(50) UNIQUE
+
+            // Fast Indexing
+            INDEXES {
+                BRIN: [tribal_color_id] // Semantic Index
+            }
+        }
+
+        SATELLITE: sat_burial_info WITH temporal_tracking {
+            tribal_color_id: BIGINT,
+            death_date: DATE,
+            burial_date: DATE,
+            death_certificate_img: VARCHAR(500)
+        }
+    }
+
+    // 3. AI: Multilingual Vectorization
+    VECTORIZATION {
+        MODEL: 'intfloat/multilingual-e5-large'
+        EMBEDDINGS {
+            // Find "Uncle Ali from the Kanani tribe" using text search
+            burial_record: [full_name_arabic, tribe_name, notes]
+        }
+    }
+}
