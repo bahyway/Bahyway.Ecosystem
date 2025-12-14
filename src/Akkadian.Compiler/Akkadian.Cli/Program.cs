@@ -79,6 +79,22 @@ namespace Akkadian.Cli
                 Console.WriteLine($"\n✅ Python Service saved to: {Path.GetFullPath(pyFilename)}");
                 Console.ResetColor();
 
+                // --- 5. Avalonia UI Generation ---
+                Console.WriteLine("[5] Generating Avalonia ViewModels...");
+                var uiGenerator = new AvaloniaGenerator(); // Add namespace Akkadian.Core.Generators
+                string uiOutput = uiGenerator.Generate(ast);
+
+                string uiFilename = Path.ChangeExtension(filePath, ".ViewModels.cs");
+                File.WriteAllText(uiFilename, uiOutput);
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("\n--- UI PREVIEW ---");
+                Console.WriteLine(uiOutput);
+                Console.WriteLine("------------------");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"\n✅ UI ViewModels saved to: {Path.GetFullPath(uiFilename)}");
+                Console.ResetColor();
+
                 // Show Preview of Actors
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("\n--- ACTOR PREVIEW ---");
@@ -88,12 +104,14 @@ namespace Akkadian.Cli
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"✅ Actor Code saved to: {Path.GetFullPath(actorFilename)}");
                 Console.ResetColor();
+
+
             }
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
         }
-
+                
         static string GetSampleCode()
         {
             return @"

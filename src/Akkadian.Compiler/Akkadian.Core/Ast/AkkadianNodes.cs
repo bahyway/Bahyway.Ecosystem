@@ -15,28 +15,22 @@ namespace Akkadian.Core.Ast
         public VectorizationNode? Vectorization { get; set; }
         public List<CommandNode> Commands { get; set; } = new List<CommandNode>();
         public List<RagQueryNode> RagQueries { get; set; } = new List<RagQueryNode>();
+
+        // NEW V3.1 BLOCKS
         public RuleSetNode? RuleSet { get; set; }
         public PresentationNode? Presentation { get; set; }
+        public MetaAlgorithmicsNode? MetaAlgorithmics { get; set; }
     }
 
-    // --- IDENTITY (UPDATED) ---
+    // --- IDENTITY (Enhanced) ---
     public class IdentityNode
     {
         public string Name { get; set; } = string.Empty;
         public List<string> BusinessKeys { get; set; } = new List<string>();
-
-        // This was missing!
         public List<FuzzyRuleConfig> FuzzyRules { get; set; } = new List<FuzzyRuleConfig>();
-
-        // This was missing!
         public SpatialIdConfig? SpatialId { get; set; }
-
-        // Old property for backward compatibility (optional)
-        public FuzzyMatchConfig? FuzzyMatch { get; set; }
-        public string? SpatialColorExpression { get; set; }
     }
 
-    // New Helper Classes for Identity
     public class FuzzyRuleConfig
     {
         public List<string> Fields { get; set; } = new List<string>();
@@ -48,18 +42,10 @@ namespace Akkadian.Core.Ast
     {
         public string Algorithm { get; set; } = string.Empty;
         public List<string> Dimensions { get; set; } = new List<string>();
-        public string Precision { get; set; } = string.Empty;
+        public int Precision { get; set; }
     }
 
-    // Old Helper (Keep to prevent breaking old code if needed)
-    public class FuzzyMatchConfig
-    {
-        public string Field { get; set; } = string.Empty;
-        public string Algorithm { get; set; } = string.Empty;
-        public double Threshold { get; set; }
-    }
-
-    // --- STORAGE ---
+    // --- STORAGE (Enhanced) ---
     public class StorageNode
     {
         public List<TableNode> Hubs { get; set; } = new List<TableNode>();
@@ -70,9 +56,13 @@ namespace Akkadian.Core.Ast
     public class TableNode
     {
         public string Name { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty; // HUB, SATELLITE, LINK
         public bool HasTemporalTracking { get; set; }
+
+        // NEW: Physical Storage Options
         public string? PartitionStrategy { get; set; }
+        public string? ClusteredBy { get; set; }
+
         public List<ColumnNode> Columns { get; set; } = new List<ColumnNode>();
         public Dictionary<string, List<string>> Indexes { get; set; } = new Dictionary<string, List<string>>();
     }
@@ -85,16 +75,7 @@ namespace Akkadian.Core.Ast
         public bool IsUnique { get; set; }
     }
 
-    // --- NEW FEATURES ---
-    public class RuleSetNode
-    {
-        public string Name { get; set; } = string.Empty;
-        public List<string> Inputs { get; set; } = new List<string>();
-        public string Output { get; set; } = string.Empty;
-        public List<string> LogicRules { get; set; } = new List<string>();
-        public string Algorithm { get; set; } = "MAMDANI";
-    }
-
+    // --- NEW BLOCKS ---
     public class PresentationNode
     {
         public List<StyleNode> Styles { get; set; } = new List<StyleNode>();
@@ -106,11 +87,29 @@ namespace Akkadian.Core.Ast
         public string Color { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
         public string Shape { get; set; } = string.Empty;
-        public string LabelField { get; set; } = string.Empty;
         public string SizeByField { get; set; } = string.Empty;
     }
 
-    // --- STANDARD ---
+    public class RuleSetNode
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Algorithm { get; set; } = "MAMDANI";
+        public List<string> LogicRules { get; set; } = new List<string>();
+    }
+
+    public class MetaAlgorithmicsNode
+    {
+        public string ExecutionModel { get; set; } = "actor_based";
+        public List<ActorConfig> Actors { get; set; } = new List<ActorConfig>();
+    }
+
+    public class ActorConfig
+    {
+        public string Name { get; set; } = string.Empty;
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+    }
+
+    // --- STANDARD NODES ---
     public class VectorizationNode
     {
         public string ModelName { get; set; } = string.Empty;
