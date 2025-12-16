@@ -8,6 +8,7 @@
   <ItemGroup>
     <!-- LOOK! No versions here anymore! -->
     <PackageReference Include="Akka" />
+    <PackageReference Include="Avalonia" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />

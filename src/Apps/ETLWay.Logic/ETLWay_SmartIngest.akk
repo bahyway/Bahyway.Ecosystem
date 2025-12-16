@@ -1,0 +1,118 @@
+CONTEXT ETLWay_SmartIngest {
+
+    // ==========================================
+    // 1. DATA DEFINITIONS (Storage)
+    // ==========================================
+    STORAGE StagingArea {
+        TABLE staging_file_metadata {
+            file_id: UUID PRIMARY KEY,
+            original_name: VARCHAR(255),
+            arrival_time: TIMESTAMP,
+            file_size_bytes: BIGINT,
+            status: VARCHAR(50)
+        }
+
+        TABLE staging_raw_data {
+            row_id: BIGINT IDENTITY,
+            file_id: UUID,
+            raw_json_content: JSONB,
+            ingest_timestamp: TIMESTAMP
+        }
+    }
+
+    // ==========================================
+    // 2. LOGIC DEFINITIONS (Rules)
+    // ==========================================
+    RULESET FormatValidationRules {
+        ALGORITHM: SUGENO
+        INPUT: column_count_match (0 to 100)
+        INPUT: data_type_match_score (0 to 100)
+        OUTPUT: confidence_score
+        LOGIC: "IF column_count_match IS perfect AND data_type_match_score IS high THEN confidence_score IS auto_approve"
+    }
+
+    // ==========================================
+    // 3. ORCHESTRATION (The Flow)
+    // ==========================================
+    SAGA ZipFileProcessingSaga {
+        STEP Initialization {
+            TRIGGER: FileArrivedEvent
+            ACTION: CreateStagingMetadata
+            NEXT: Extraction
+        }
+
+        STEP Extraction {
+            PROCESSING_MODE: STREAMING_READ
+            ACTION: SplitZipFile   // <--- This calls the COMMAND below
+            NEXT: FormatComparison
+        }
+
+        STEP FormatComparison {
+            ACTION: CompareFormatsActor
+            RELIABILITY { MODE: AT_LEAST_ONCE }
+            NEXT: ValidationDecision
+        }
+
+        STEP ValidationDecision {
+            ACTION: ExecuteFuzzyRules
+            WAIT_FOR: DataStewardApprovalCommand
+            TIMEOUT: 24_HOURS
+            NEXT: LoadToPostgres
+        }
+
+        STEP LoadToPostgres {
+            ACTION: BulkLoadActor
+            PROCESSING_MODE: BATCH_INSERT (Size: 5000)
+            NEXT: RunCDC
+        }
+
+        STEP RunCDC {
+            ACTION: DataVaultMergeActor
+        }
+    }
+
+    // ==========================================
+    // 4. COMMAND IMPLEMENTATIONS (The Logic)
+    // ==========================================
+
+    // --- HERE IS WHERE YOU PUT THE SPLIT LOGIC ---
+    COMMAND SplitZipFile {
+
+        // Define your High-Precision Timestamp
+        VARIABLES {
+            // Generates: "20251216_143005_128" (YearMonthDay_HourMinSec_Millisec)
+            global_timestamp = NOW().FORMAT('yyyyMMdd_HHmmss_fff')
+        }
+
+        EXECUTION {
+            // 1. Generate the Format File Name (Prefix with Timestamp)
+            GENERATE_NAME format_filename {
+                PATTERN: "{timestamp}_{original_name}.fmt.json"
+                PARAMS: [global_timestamp, filename_no_ext]
+            }
+
+            // 2. Generate the CSV Data File Name (Prefix with Timestamp)
+            GENERATE_NAME data_filename {
+                PATTERN: "{timestamp}_{original_name}.csv"
+                PARAMS: [global_timestamp, filename_no_ext]
+            }
+
+            // 3. Perform the actual Unzip and Rename
+            ACTION: ExtractZip
+                WITH {
+                    target_format_name: format_filename,
+                    target_data_name: data_filename
+                }
+
+            // 4. Update the Metadata Table to link the UUID to these new filenames
+            UPDATE_EVENT: staging_file_metadata
+                WITH {
+                    status: 'EXTRACTED',
+                    generated_data_file: data_filename,
+                    generated_format_file: format_filename
+                }
+        }
+    }
+
+    // You would also define 'CompareFormatsActor' and others here if they are Commands...
+}

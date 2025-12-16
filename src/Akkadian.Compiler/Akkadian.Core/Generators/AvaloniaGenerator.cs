@@ -12,6 +12,8 @@ namespace Akkadian.Core.Generators
             sb.AppendLine("using CommunityToolkit.Mvvm.ComponentModel;");
             sb.AppendLine("using Avalonia.Media;");
             sb.AppendLine("using System;");
+            sb.AppendLine("using System.Threading.Tasks;");
+            sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine();
 
             foreach (var context in program.Contexts)
@@ -21,6 +23,10 @@ namespace Akkadian.Core.Generators
                 string ns = $"{ToPascalCase(context.Name)}.UI.ViewModels";
                 sb.AppendLine($"namespace {ns}");
                 sb.AppendLine("{");
+
+                // =========================================================
+                // 1. GENERATE VIEW MODELS
+                // =========================================================
 
                 // Generate a Base Node ViewModel for this Context
                 sb.AppendLine($"    public partial class {ToPascalCase(context.Name)}NodeViewModel : ObservableObject");
@@ -56,7 +62,6 @@ namespace Akkadian.Core.Generators
                         foreach (var col in hub.Columns)
                         {
                             string propType = MapToCSharpType(col.DataType);
-                            string propName = ToPascalCase(col.Name);
                             // Using CommunityToolkit.Mvvm for automatic PropertyChanged notification
                             sb.AppendLine($"        [ObservableProperty] private {propType} _{col.Name.ToLower()};");
                         }
@@ -65,7 +70,46 @@ namespace Akkadian.Core.Generators
                         sb.AppendLine();
                     }
                 }
-                sb.AppendLine("}");
+
+                // =========================================================
+                // 2. GENERATE MODULE (PLUGIN ENTRY POINT)
+                // =========================================================
+
+                string moduleName = ToPascalCase(context.Name) + "Module";
+                sb.AppendLine($"    public class {moduleName} : BahyWay.SharedKernel.Interfaces.IAkkadianModule");
+                sb.AppendLine("    {");
+                sb.AppendLine($"        public string ModuleName => \"{context.Name}\";");
+                sb.AppendLine();
+                sb.AppendLine("        public async Task<List<Bahyway.SharedKernel.Graph.VisualNode>> LoadNodesAsync(Avalonia.Rect viewport)");
+                sb.AppendLine("        {");
+                sb.AppendLine("            var nodes = new List<Bahyway.SharedKernel.Graph.VisualNode>();");
+
+                // Generate logic to convert Hubs to VisualNodes
+                if (context.Storage != null)
+                {
+                    int xCounter = 100;
+                    foreach (var hub in context.Storage.Hubs)
+                    {
+                        // Find style
+                        var style = context.Presentation?.Styles.FirstOrDefault(s => s.TargetEntity == hub.Name);
+                        string color = style?.Color ?? "#808080";
+
+                        sb.AppendLine($"            // Mocking data for {hub.Name}");
+                        sb.AppendLine($"            nodes.Add(new Bahyway.SharedKernel.Graph.VisualNode {{");
+                        sb.AppendLine($"                Id = Guid.NewGuid().ToString(),");
+                        sb.AppendLine($"                Label = \"{hub.Name}\",");
+                        sb.AppendLine($"                X = {xCounter}, Y = {xCounter},");
+                        sb.AppendLine($"                ColorHex = \"{color}\"");
+                        sb.AppendLine($"            }});");
+                        xCounter += 150;
+                    }
+                }
+
+                sb.AppendLine("            return await Task.FromResult(nodes);");
+                sb.AppendLine("        }");
+                sb.AppendLine("    }");
+
+                sb.AppendLine("}"); // End Namespace
             }
             return sb.ToString();
         }

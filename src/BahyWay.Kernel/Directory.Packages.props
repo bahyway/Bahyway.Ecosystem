@@ -60,7 +60,7 @@
     <!-- BAHYWAY KG EDITOR (AVALONIA UI) -->
     <!-- ALL VERSIONS ALIGNED TO 11.1.0 -->
     <!-- =================================================== -->
-    <PackageVersion Include="Avalonia" Version="11.1.0" />
+    <PackageVersion Include="Avalonia" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Desktop" Version="11.1.0" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.1.0" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.1.0" />

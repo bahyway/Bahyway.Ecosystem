@@ -1,0 +1,67 @@
+CONTEXT ETLWay_Pipeline {
+
+    // 1. Define the Stages as "Hubs" so they appear on the Graph
+    STORAGE DataVault {
+        // We use CLUSTERED_BY: StageID to group them visually
+        HUB: Stage_Landing        WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+        HUB: Stage_Cleansing      WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+        HUB: Stage_Stewardship    WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+        HUB: Stage_Operational_DB WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+        HUB: Stage_DataVault      WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+        HUB: Stage_DataMarts      WITH CLUSTERED_BY: stage_id { stage_id: INT PRIMARY KEY }
+
+        // Links define the "Roads" the particles travel
+        LINK: Flow_Land_to_Clean { source: Stage_Landing, target: Stage_Cleansing }
+        LINK: Flow_Clean_to_Steward { source: Stage_Cleansing, target: Stage_Stewardship }
+        LINK: Flow_Steward_to_Ops { source: Stage_Stewardship, target: Stage_Operational_DB }
+        LINK: Flow_Ops_to_Vault { source: Stage_Operational_DB, target: Stage_DataVault }
+        LINK: Flow_Vault_to_Mart { source: Stage_DataVault, target: Stage_DataMarts }
+    }
+
+    // 2. Define the Visuals (Fixed Layout for the Pipeline)
+    PRESENTATION {
+        STYLE Stage_Landing      { SHAPE: RECTANGLE, COLOR: '#808080', ICON: 'upload', LABEL: 'WatchDog Landing' }
+        STYLE Stage_Cleansing    { SHAPE: HEXAGON,   COLOR: '#808080', ICON: 'filter', LABEL: 'Fuzzy Cleansing' }
+        STYLE Stage_Stewardship  { SHAPE: DIAMOND,   COLOR: '#808080', ICON: 'user',   LABEL: 'Steward Approval' }
+        STYLE Stage_Operational_DB { SHAPE: CYLINDER, COLOR: '#808080', ICON: 'database', LABEL: 'Staging DB' }
+        STYLE Stage_DataVault    { SHAPE: CYLINDER,  COLOR: '#808080', ICON: 'vault',  LABEL: 'Data Vault' }
+        STYLE Stage_DataMarts    { SHAPE: RECTANGLE, COLOR: '#808080', ICON: 'chart',  LABEL: 'Dashboards' }
+    }
+
+    // 3. The Logic governing the flow
+    RULESET CleansingRules {
+        ALGORITHM: MAMDANI
+        INPUT: data_completeness
+        OUTPUT: next_stage_probability
+        LOGIC: "IF data_completeness IS high THEN next_stage IS Steward"
+        LOGIC: "IF data_completeness IS low THEN next_stage IS Reject"
+    }
+
+    // 4. The Actors that emit the "Particle" events
+    META_ALGORITHMICS {
+        EXECUTION_MODEL: actor_based
+        ACTORS {
+            PipelineOrchestrator: { POOL_SIZE: 1 }
+        }
+    }
+    // 5. The Trigger
+    COMMAND IngestZipFile {
+        // Explicitly state the source
+        SOURCE_SYSTEM: "AlarmInsight.WatchDog"
+
+        INPUT: file_path
+
+        EXECUTION {
+            // Visual Update: Tell KGEditor to spawn a particle at "Landing Zone"
+            INSERT_EVENT: ui_particle_spawn {
+                from_node: "Stage_Landing",
+                to_node: "Stage_Cleansing",
+                color: "#FFFF00" // Yellow
+            }
+
+            // Logic Update: Start the splitter
+            ACTOR: FileSplitterActor
+        }
+    }
+}
+

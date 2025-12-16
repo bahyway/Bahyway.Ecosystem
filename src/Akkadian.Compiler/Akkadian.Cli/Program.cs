@@ -111,7 +111,7 @@ namespace Akkadian.Cli
             Console.WriteLine("\nPress any key to exit...");
             // Console.ReadKey();
         }
-                
+
         static string GetSampleCode()
         {
             return @"
@@ -119,12 +119,23 @@ CONTEXT beeMDM_Governance {
 
     IDENTITY MasterEntity {
         BUSINESS_KEY: tax_id
-        FUZZY_MATCH: name USING Levenshtein THRESHOLD 0.85
-        SPATIAL_COLOR: GPS_to_RGB(lat, lon)
+
+        // v3.1 Syntax: Nested Fuzzy Resolution
+        FUZZY_RESOLUTION {
+            MATCH [name] USING Levenshtein THRESHOLD 0.85
+        }
+
+        // v3.1 Syntax: Spatial ID Block
+        SPATIAL_ID {
+            ALGORITHM: EXTENDED_COLOR_64
+            DIMENSIONS: [lat, lon]
+            PRECISION: 64
+        }
     }
 
     STORAGE DataVault {
-        HUB: hub_customer WITH {
+        // v3.1 Syntax: WITH requires a strategy like CLUSTERED_BY, or remove WITH entirely
+        HUB: hub_customer WITH CLUSTERED_BY: color_id {
             customer_key: UUID PRIMARY KEY,
             name: VARCHAR(200)
         }
@@ -132,16 +143,6 @@ CONTEXT beeMDM_Governance {
         SATELLITE: sat_customer_details WITH temporal_tracking {
             customer_key: UUID,
             email: VARCHAR(100)
-        }
-    }
-
-    COMMAND IngestCustomerData {
-        VALIDATION {
-            CHECK: email_is_valid
-            CHECK: name_not_empty
-        }
-        EXECUTION {
-            INSERT_EVENT: sat_customer_details { payload }
         }
     }
 
