@@ -1,0 +1,77 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- ACTORS -->
+    <PackageVersion Include="Akka" Version="1.5.57" />
+    <PackageVersion Include="Akka.Persistence" Version="1.5.57" />
+    <PackageVersion Include="Akka.Remote" Version="1.5.57" />
+    <PackageVersion Include="Akka.Streams" Version="1.5.57" />
+    <PackageVersion Include="SharpCompress" Version="0.42.1" />
+    <!-- SYSTEM -->
+    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
+    <!-- DATABASE -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" />
+    <PackageVersion Include="Npgsql" Version="8.0.5" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+    <PackageVersion Include="Pgvector" Version="0.3.2" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
+    <!-- MICROSOFT EXTENSIONS (ALL 9.0.0) -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    <!-- API -->
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.3" />
+    <!-- LOGGING -->
+    <PackageVersion Include="Serilog" Version="4.0.1" />
+    <PackageVersion Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
+    <!-- AVALONIA (UI) -->
+    <PackageVersion Include="Avalonia" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Controls.WebView" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.WebView.Desktop" Version="11.2.0" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageVersion Include="SkiaSharp" Version="2.88.8" />
+    <PackageVersion Include="WebView.Avalonia" Version="11.0.0.1" />
+    <PackageVersion Include="WebView.Avalonia.Desktop" Version="11.0.0.1" />
+    <!-- TOOLS & COMPILER -->
+    <PackageVersion Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageVersion Include="Antlr4BuildTasks" Version="12.8.0" />
+    <PackageVersion Include="FluentValidation" Version="11.9.2" />
+    <PackageVersion Include="MediatR" Version="12.4.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.PowerShell.SDK" Version="7.4.5" />
+    <!-- HANGFIRE -->
+    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.14" />
+    <PackageVersion Include="Hangfire.Core" Version="1.8.14" />
+    <PackageVersion Include="Hangfire.PostgreSql" Version="1.20.10" />
+    <!-- TESTING -->
+    <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+</Project>

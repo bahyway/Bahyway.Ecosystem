@@ -1,0 +1,123 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20251217043147
+Username: MSI\Bahaa
+RunAs User: MSI\Bahaa
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 65572
+PSVersion: 5.1.26100.7462
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7462
+BuildVersion: 10.0.26100.7462
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Dev\BahyWay\cpm_fix_log_20251217_043147.txt
+========================================
+CPM FIX SCRIPT WITH LOGGING
+========================================
+Started: 12/17/2025 04:31:47
+Solution: C:\Dev\BahyWay
+Log File: C:\Dev\BahyWay\cpm_fix_log_20251217_043147.txt
+
+[1/7] Checking file locations...
+  Found: Directory.Packages.props
+  Found: Directory.Build.props
+
+[2/7] Verifying CPM is enabled...
+  CPM is enabled
+
+[3/7] Finding .csproj files...
+  Found 23 project files
+
+[4/7] Checking for Version attributes...
+  No files need fixing
+
+[5/7] Removing Version attributes...
+  Fixed 0 files
+
+[6/7] Clearing NuGet cache...
+Clearing NuGet HTTP cache: C:\Users\Bahaa\AppData\Local\NuGet\v3-cache
+Clearing NuGet global packages folder: C:\Users\Bahaa\.nuget\packages\
+Local resources partially cleared.
+error: Failed to delete 'C:\Users\Bahaa\.nuget\packages\'.
+error: Failed to delete 'C:\Users\Bahaa\.nuget\packages\antlr4buildtasks\12.8.0\lib\netstandard2.0\Antlr4BuildTasks.dll'
+.
+error: Failed to delete 'C:\Users\Bahaa\.nuget\packages\microsoft.visualstudio.javascript.sdk\0.5.128-alpha\tools\Micros
+oft.VisualStudio.JavaScript.Tasks.dll'.
+Clearing NuGet Temp cache: C:\Users\Bahaa\AppData\Local\Temp\NuGetScratch
+Clearing NuGet plugins cache: C:\Users\Bahaa\AppData\Local\NuGet\plugins-cache
+error: Clearing local resources failed: Unable to delete one or more files.
+  Cache cleared
+
+[7/7] Deleting bin/obj folders...
+  Deleting 20 bin folders...
+  Deleting 20 obj folders...
+  Folders deleted
+
+========================================
+RESTORING PACKAGES
+========================================
+
+Running: dotnet restore --force
+This may take several minutes...
+
+
+--- RESTORE OUTPUT ---
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error : Could not resolve SDK "Microsoft.VisualStudio.JavaScript.Sdk". Exactly one of the probing messages below indicates why we could not resolve the SDK. Investigate and resolve that message to correctly specify the SDK.
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :   SDK resolver "Microsoft.DotNet.MSBuildWorkloadSdkResolver" returned null.
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :   System.AggregateException: One or more errors occurred. (Access to the path 'Microsoft.VisualStudio.JavaScript.Tasks.dll' is denied.)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :  ---> System.UnauthorizedAccessException: Access to the path 'Microsoft.VisualStudio.JavaScript.Tasks.dll' is denied.
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at System.IO.FileSystem.RemoveDirectoryRecursive(String fullPath, WIN32_FIND_DATA& findData, Boolean topLevel)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at System.IO.FileSystem.RemoveDirectory(String fullPath, Boolean recursive)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at System.IO.DirectoryInfo.Delete(Boolean recursive)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Packaging.PackageExtractor.<>c__DisplayClass5_0.<<InstallFromSourceAsync>b__0>d.MoveNext()
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error : --- End of stack trace from previous location ---
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Common.ConcurrencyUtilities.ExecuteWithFileLockedAsync[T](String filePath, Func`2 action, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Common.ConcurrencyUtilities.ExecuteWithFileLockedAsync[T](String filePath, Func`2 action, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Packaging.PackageExtractor.InstallFromSourceAsync(PackageIdentity packageIdentity, IPackageDownloader packageDownloader, VersionFolderPathResolver versionFolderPathResolver, PackageExtractionContext packageExtractionContext, CancellationToken token, Guid parentId)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.ProjectRestoreCommand.InstallPackageAsync(RemoteMatch installItem, NuGetv3LocalRepository userPackageFolder, PackageExtractionContext packageExtractionContext, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.ProjectRestoreCommand.InstallPackagesAsync(HashSet`1 uniquePackages, IEnumerable`1 graphs, IList`1 downloadDependencyInformations, NuGetv3LocalRepository userPackageFolder, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.DependencyGraphResolver.ResolveAsync(NuGetv3LocalRepository userPackageFolder, IReadOnlyList`1 fallbackPackageFolders, RemoteWalkContext context, ProjectRestoreCommand projectRestoreCommand, List`1 localRepositories, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreCommand.ExecuteRestoreAsync(NuGetv3LocalRepository userPackageFolder, IReadOnlyList`1 fallbackPackageFolders, RemoteWalkContext context, TelemetryActivity telemetryActivity, Boolean success, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreCommand.GenerateRestoreGraphsAsync(TelemetryActivity telemetry, RemoteWalkContext contextForProject, Boolean success, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreCommand.ExecuteAsync(CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreRunner.ExecuteAsync(RestoreSummaryRequest summaryRequest, CancellationToken token)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreRunner.CompleteTaskAsync(List`1 restoreTasks)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at NuGet.Commands.RestoreRunner.RunWithoutCommitAsync(IEnumerable`1 restoreRequests, RestoreArgs restoreContext, CancellationToken cancellationToken)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    --- End of inner exception stack trace ---
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : error :    at Microsoft.Build.NuGetSdkResolver.NuGetSdkResolver.NuGetAbstraction.GetSdkResult(SdkReference sdk, Object nuGetVersion, SdkResolverContext context, SdkResultFactory factory)
+C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj : warning NU1503: Skipping restore for project 'C:\Dev\BahyWay\src\02_Tools\Akkadian.IDE\akkadian-dsl\akkadian-dsl.esproj'. The project file may be invalid or missing targets required for restore. [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\03_Services\BahyWay.Web\BahyWay.Web.Client\BahyWay.Web.Client.esproj : warning NU1503: Skipping restore for project 'C:\Dev\BahyWay\src\03_Services\BahyWay.Web\BahyWay.Web.Client\BahyWay.Web.Client.esproj'. The project file may be invalid or missing targets required for restore. [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Determining projects to restore...
+  Skipping project "C:\Dev\BahyWay\src\03_Services\AlarmInsight\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj" because it was not found.
+  Skipping project "C:\Dev\BahyWay\src\03_Services\AlarmInsight\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj" because it was not found.
+C:\Dev\BahyWay\src\01_Platform\BahyWay.RulesEngine\BahyWay.RulesEngine.csproj : error NU1015: The following PackageReference item(s) do not have a version specified: Microsoft.Extensions.DependencyInjection.Abstractions, Microsoft.Extensions.Logging.Abstractions, Microsoft.Extensions.Options [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Failed to restore C:\Dev\BahyWay\src\01_Platform\BahyWay.RulesEngine\BahyWay.RulesEngine.csproj (in 126 ms).
+  Restored C:\Dev\BahyWay\src\03_Services\BahyWay.Web\BahyWay.Web.API\BahyWay.Web.API.csproj (in 6.02 sec).
+C:\Dev\BahyWay\src\03_Services\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj : error NU1015: The following PackageReference item(s) do not have a version specified: Akka.Remote, Avalonia, Avalonia.Desktop, Avalonia.Fonts.Inter, Avalonia.Themes.Fluent, CommunityToolkit.Mvvm, Npgsql, SkiaSharp, System.Text.Json, WebView.Avalonia, WebView.Avalonia.Desktop [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Failed to restore C:\Dev\BahyWay\src\03_Services\Bahyway.KGEditor\Bahyway.KGEditor.UI\Bahyway.KGEditor.UI.csproj (in 17 ms).
+C:\Program Files\dotnet\sdk\10.0.100\NuGet.targets(196,5): error : Access to the path 'Antlr4BuildTasks.dll' is denied. [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+--- END OUTPUT ---
+
+========================================
+SUMMARY
+========================================
+
+RESTORE FAILED
+
+Exit code: 1
+Log saved to: C:\Dev\BahyWay\cpm_fix_log_20251217_043147.txt
+
+Please share the log file for analysis
+
+**********************
+Windows PowerShell transcript end
+End time: 20251217043207
+**********************

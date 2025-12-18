@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Version numbers removed! They are now in Directory.Packages.props -->
+    <PackageReference Include="Hangfire.AspNetCore" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Hangfire.PostgreSql" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+	<!-- FORCE API TO USE V9.0 EXTENSIONS INSTEAD OF V8.0 SDK DEFAULTS -->
+	<PackageReference Include="Microsoft.Extensions.Hosting" />
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+	<PackageReference Include="Microsoft.Extensions.Configuration" />
+	<PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\..\04_Apps\ETLWay.Logic\ETLWay.Logic.csproj" />
+    <ProjectReference Include="..\AlarmInsight.Application\AlarmInsight.Application.csproj" />
+    <ProjectReference Include="..\AlarmInsight.Infrastructure\AlarmInsight.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
+

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # 1. THE NERVOUS SYSTEM (Message Bus)
+  redis:
+    image: redis:alpine
+    container_name: bahyway-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  # 2. THE BRAIN (Database)
+  postgres:
+    image: postgres:15-alpine
+    container_name: bahyway-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bahyway_admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: bahyway_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  redis_data:
+  postgres_data:
