@@ -35,5 +35,32 @@ namespace BahyWay.SharedKernel.Infrastructure.Messaging
         {
             await _db.StreamAcknowledgeAsync(streamKey, "etl_group", messageId);
         }
+
+        public async Task SubscribeAsync<T>(string topic, Action<T> handler)
+        {
+            var subscriber = _redis.GetSubscriber();
+
+            await subscriber.SubscribeAsync(topic, (channel, value) =>
+            {
+                if (value.HasValue)
+                {
+                    try
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true, // Crucial
+                            IncludeFields = true // Just in case
+                        };
+
+                        var obj = JsonSerializer.Deserialize<T>(value.ToString(), options);
+                        if (obj != null) handler(obj);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Redis Deserialization Error: {ex.Message}");
+                    }
+                }
+            });
+        }
     }
 }

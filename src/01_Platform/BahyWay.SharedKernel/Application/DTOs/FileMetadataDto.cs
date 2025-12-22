@@ -4,24 +4,25 @@ namespace BahyWay.SharedKernel.Application.DTOs
 {
     public class FileMetadataDto
     {
-        // Identification
         public string OriginalFileName { get; set; }
-        public string GeneratedDataFileName { get; set; } // The CSV/Excel extracted
-        public string GeneratedFormatFileName { get; set; } // The JSON Schema
+        public string GeneratedDataFileName { get; set; }   // Path to .csv
+        public string GeneratedFormatFileName { get; set; } // Path to .json
 
-        // The "Shape" Statistics
         public long RowCount { get; set; }
         public long FileSizeBytes { get; set; }
-        public string FormatHash { get; set; } // SHA256 Hash for change detection
+        public string FormatHash { get; set; }
 
-        // Detailed Structure
         public List<FileColumnDefinition> Columns { get; set; } = new();
     }
 
     public class FileColumnDefinition
     {
         public string ColumnName { get; set; }
-        public string EstimatedDataType { get; set; } // "Int", "String", "DateTime"
         public int OrdinalPosition { get; set; }
+
+        // --- NEW ANALYSIS FIELDS ---
+        public string EstimatedDataType { get; set; } // Int, String, etc.
+        public int MaxLength { get; set; }            // Max char length found
+        public bool HasNulls { get; set; }            // Found any empty values?
     }
 }

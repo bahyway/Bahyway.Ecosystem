@@ -13,6 +13,8 @@ using Bahyway.KGEditor.UI.Actors;
 using Bahyway.KGEditor.UI.Controls;
 using Bahyway.KGEditor.UI.Services;
 using Bahyway.KGEditor.UI.ViewModels;
+using Bahyway.KGEditor.UI.ViewModels.Monitoring; // <--- NEW IMPORT
+using Bahyway.KGEditor.UI.Views.Monitoring;     // <--- NEW IMPORT
 using Bahyway.SharedKernel.Graph;
 using BahyWay.SharedKernel.Interfaces;
 using System;
@@ -46,12 +48,26 @@ namespace Bahyway.KGEditor.UI.Views
         {
             InitializeComponent();
             _spatialService = new SpatialViewportService();
+
+            // ---------------------------------------------------------
+            // 1. INITIALIZE PIPELINE MONITOR (Tab 2 Logic)
+            // ---------------------------------------------------------
+            // We manually find the control defined in XAML and assign its ViewModel
+            // This allows Tab 2 to connect to Redis independently of the Graph Editor
+            //var monitorView = this.FindControl<PipelineMonitorView>("MonitorView");
+            var monitorView = this.FindControl<Bahyway.KGEditor.UI.Views.Monitoring.PipelineMonitorView>("MonitorView");
+            if (monitorView != null)
+            {
+                // This starts the Redis Listener immediately
+                monitorView.DataContext = new PipelineMonitorViewModel();
+            }
+
             this.Opened += OnWindowOpened;
             this.Closing += OnWindowClosing;
         }
 
         // =========================================================
-        // 1. INITIALIZATION & LIFECYCLE
+        // 2. INITIALIZATION & LIFECYCLE
         // =========================================================
         private void OnWindowOpened(object? sender, EventArgs e)
         {
@@ -116,7 +132,7 @@ namespace Bahyway.KGEditor.UI.Views
         }
 
         // =========================================================
-        // 2. EXTENSION / PLUGIN SYSTEM (The "Brain" - Akkadian v3.1)
+        // 3. EXTENSION / PLUGIN SYSTEM (The "Brain" - Akkadian v3.1)
         // =========================================================
         private void LoadExtensions()
         {
@@ -170,7 +186,7 @@ namespace Bahyway.KGEditor.UI.Views
         }
 
         // =========================================================
-        // 3. SPATIAL INTERACTION (The "Billions" UI Logic)
+        // 4. SPATIAL INTERACTION (The "Billions" UI Logic)
         // =========================================================
         private void OnCanvasPointerPressed(object? sender, PointerPressedEventArgs e)
         {
@@ -226,7 +242,7 @@ namespace Bahyway.KGEditor.UI.Views
         }
 
         // =========================================================
-        // 4. EDITOR TOOLS & BUILD BUTTON
+        // 5. EDITOR TOOLS & BUILD BUTTON
         // =========================================================
 
         // This links the XAML button to the ViewModel Logic via a Dialog
@@ -326,7 +342,7 @@ namespace Bahyway.KGEditor.UI.Views
         }
 
         // =========================================================
-        // 5. TEMPLATE GALLERY & LAYOUTS (FULL Implementation)
+        // 6. TEMPLATE GALLERY & LAYOUTS (FULL Implementation)
         // =========================================================
         private void ShowTemplateGallery(object? sender, RoutedEventArgs e)
         {
@@ -446,7 +462,7 @@ namespace Bahyway.KGEditor.UI.Views
         }
 
         // =========================================================
-        // 6. LAYOUT ALGORITHMS (FULL IMPLEMENTATION)
+        // 7. LAYOUT ALGORITHMS (FULL IMPLEMENTATION)
         // =========================================================
         private GraphTopology ApplyLayout(GraphTopology graph, string templateName)
         {

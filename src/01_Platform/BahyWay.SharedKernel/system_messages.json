@@ -1,0 +1,13 @@
+{
+  "Errors": {
+    "ERR_FILE_EMPTY": "File is empty or corrupted.",
+    "ERR_SCHEMA_MISSING_COL": "Critical Schema Mismatch: Column '{0}' is missing.",
+    "ERR_SCORE_CRITICAL": "CRITICAL: Quality Score {0}% is below threshold ({1}%). Pipeline Stopped.",
+    "ERR_UNKNOWN": "An unknown error occurred during processing."
+  },
+  "Scores": {
+    "SCR_EXCELLENT": "Excellent Quality ({0}%). Proceeding to Load.",
+    "SCR_WARNING": "Warning: Score is {0}%. Human Approval Required.",
+    "SCR_CRITICAL": "Critical Failure. Score {0}%. Sent to Error Queue."
+  }
+}

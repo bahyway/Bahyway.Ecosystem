@@ -24,7 +24,9 @@ namespace ETLWay.Logic.Actors
 
         private async Task ProcessFile(FileArrivedEvent msg)
         {
-            var executionId = Guid.NewGuid().ToString();
+            //var executionId = Guid.NewGuid().ToString();
+            // USE THE EXISTING ID (Fixes the split row issue)
+            var executionId = msg.ExecutionId;
             var (source, type) = ParseMetadata(msg.FileName);
 
             // 1. Notify UI: Started

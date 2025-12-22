@@ -10,19 +10,22 @@
 
   <ItemGroup>
     <!-- Explicit versions for everything -->
-    <PackageReference Include="Avalonia"  />
+    <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.ReactiveUI" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
-    <PackageReference Include="CommunityToolkit.Mvvm"  />
-    <PackageReference Include="Akka.Remote"  />
-    <PackageReference Include="SkiaSharp"  />
-    <PackageReference Include="WebView.Avalonia"  />
+	<PackageReference Include="Avalonia.Controls.DataGrid" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Akka.Remote" />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="WebView.Avalonia" />
     <PackageReference Include="WebView.Avalonia.Desktop" />
 
     <!-- The one that was causing the error -->
-    <PackageReference Include="System.Text.Json"  />
-    <PackageReference Include="Npgsql"  />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Npgsql" />
   </ItemGroup>
 
   <ItemGroup>

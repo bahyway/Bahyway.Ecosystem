@@ -12,5 +12,8 @@ namespace BahyWay.SharedKernel.Interfaces
 
         // 3. For ETLWay to acknowledge work is done
         Task AcknowledgeStreamAsync(string streamKey, string messageId);
+
+        // Add this line
+        Task SubscribeAsync<T>(string topic, Action<T> handler);
     }
 }

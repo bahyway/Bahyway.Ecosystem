@@ -497,3 +497,6 @@ __pycache__/
 
 # --- VS Code ---
 .vscode/
+# c:\Dev\BahyWay\scripts\generate_1million_records\najaf_cemetery_data
+
+najaf_cemetery_data/

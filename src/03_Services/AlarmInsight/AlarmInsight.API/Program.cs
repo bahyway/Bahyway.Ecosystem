@@ -74,10 +74,17 @@ builder.Services.AddHostedService<FileWatchDogService>();
 // ============================================
 // 6. ADD HANGFIRE
 // ============================================
-var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight");
+//var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight");
+////builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(hangfireConn));
+//?? "Host=localhost;Port=5432;Database=bahyway_db;Username=bahyway_admin;Password=password123";
+//builder.Services.AddHangfireServer();
+// Get connection string, OR use the fallback string if it returns null
+var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight")
+    ?? "Host=localhost;Port=5432;Database=bahyway_db;Username=bahyway_admin;Password=password123";
+
+// Now use the variable
 builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(hangfireConn));
 builder.Services.AddHangfireServer();
-
 // ============================================
 // 7. ADD CORS
 // ============================================
@@ -105,6 +112,17 @@ using (var scope = app.Services.CreateScope())
     // 2. Create Ingest Actor (Passes Bus + ZipWorker)
     var ingestProps = Props.Create(() => new IngestZipFileActor(bus, zipService));
     actorSystem.ActorOf(ingestProps, "ingest"); // This actor is now ALIVE and waiting.
+
+    // 3. NEW: The Pattern-Based Pipeline Actor
+    // PASS BOTH SERVICES: ZipService AND Bus
+
+    // Get the Message Resolver
+    var messageResolver = app.Services.GetRequiredService<IMessageResolver>();
+
+    //var pipelineProps = Props.Create(() => new GeneratedPipelineActor(zipService, bus));
+
+    var pipelineProps = Props.Create(() => new GeneratedPipelineActor(zipService, bus, messageResolver));
+    actorSystem.ActorOf(pipelineProps, "generated_pipeline");
 }
 
 // ============================================
