@@ -25,6 +25,7 @@
 		<PackageReference Include="SharpCompress" />
 		<PackageReference Include="StackExchange.Redis" />
 		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="MessagePack" />
 	</ItemGroup>
 
 	<ItemGroup>

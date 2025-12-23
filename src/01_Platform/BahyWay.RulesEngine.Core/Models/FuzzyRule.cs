@@ -1,4 +1,7 @@
-namespace BahyWay.RulesEngine.Models;
+using System;
+using System.Collections.Generic;
+
+namespace BahyWay.RulesEngine.Core.Models;
 
 /// <summary>
 /// Represents a fuzzy IF-THEN rule
@@ -12,12 +15,17 @@ public class FuzzyRule
     public string ConsequentFuzzySet { get; }
     public double Weight { get; set; }
 
+    // --- NEW: The Message for the UI ---
+    // When this rule fires strongly, this text goes to the Red/Orange box
+    public string FeedbackMessage { get; }
+
     public FuzzyRule(
         string name,
         Func<Dictionary<string, double>, double> antecedent,
         string consequentVariable,
         string consequentFuzzySet,
-        double weight = 1.0)
+        double weight = 1.0,
+        string feedbackMessage = "") // <--- Added Parameter (Optional for backward compatibility)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Antecedent = antecedent ?? throw new ArgumentNullException(nameof(antecedent));
@@ -28,6 +36,7 @@ public class FuzzyRule
             throw new ArgumentException("Weight must be in range (0, 1]", nameof(weight));
 
         Weight = weight;
+        FeedbackMessage = feedbackMessage;
     }
 
     /// <summary>
@@ -38,5 +47,6 @@ public class FuzzyRule
         return Antecedent(fuzzifiedInputs) * Weight;
     }
 
-    public override string ToString() => $"Rule: {Name} -> {ConsequentVariable}={ConsequentFuzzySet} (Weight: {Weight:F2})";
+    public override string ToString() =>
+        $"Rule: {Name} -> {ConsequentVariable}={ConsequentFuzzySet} (Msg: {FeedbackMessage})";
 }

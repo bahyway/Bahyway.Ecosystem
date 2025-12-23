@@ -57,48 +57,81 @@ namespace Bahyway.KGEditor.UI.ViewModels.Monitoring
             });
         }
 
+        //private void OnScoreReceived(ScoreUpdateEvent evt)
+        //{
+        //    Dispatcher.UIThread.Post(() =>
+        //    {
+        //        var job = Jobs.FirstOrDefault(j => j.Id == evt.ExecutionId);
 
+        //        // If job row doesn't exist yet, create it
+        //        if (job == null)
+        //        {
+        //            job = new JobModel
+        //            {
+        //                Id = evt.ExecutionId,
+        //                FileName = "Unknown File",
+        //                Source = evt.SourceSystem,
+        //                Type = "Unknown",
+        //                StartTime = DateTime.Now.ToString("HH:mm:ss")
+        //            };
+        //            Jobs.Insert(0, job);
+        //        }
+
+        //        // Update Status & Score
+        //        job.Score = evt.QualityScore;
+        //        job.Status = $"{evt.OverallStatus} ({evt.QualityScore}%)";
+        //        if (evt.QualityScore < 50) job.StatusColor = "#FF0000";
+
+        //        // --- THE FIX ---
+        //        // Force update the text. If empty, show specific debug message.
+        //        if (string.IsNullOrWhiteSpace(evt.Message))
+        //        {
+        //            job.ErrorDetails = $"[System] No error message provided. (Score: {evt.QualityScore}%)";
+        //        }
+        //        else
+        //        {
+        //            job.ErrorDetails = evt.Message;
+        //        }
+        //        // ----------------
+        //    });
+        //}
         private void OnScoreReceived(ScoreUpdateEvent evt)
         {
-            // DEBUG LOG: Check Visual Studio Output Window to see this!
-            System.Diagnostics.Debug.WriteLine($"[UI SCORE] ID: {evt.ExecutionId} | Msg: {evt.Message} | Score: {evt.QualityScore}");
-
             Dispatcher.UIThread.Post(() =>
             {
+                // DEBUG: Print to Visual Studio "Output" window
+                System.Diagnostics.Debug.WriteLine($"[UI MATCHING] Incoming ID: {evt.ExecutionId} | Message: {evt.Message}");
+                System.Diagnostics.Debug.WriteLine($"[UI MATCHING] Existing Jobs: {string.Join(", ", Jobs.Select(j => j.Id))}");
+
+                // Try to find the job
                 var job = Jobs.FirstOrDefault(j => j.Id == evt.ExecutionId);
 
-                // FIX: If the error arrives before the start event, create the row now!
                 if (job == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("[UI MATCHING] ❌ NO MATCH FOUND! Creating new Orphan row.");
                     job = new JobModel
                     {
                         Id = evt.ExecutionId,
-                        FileName = "Unknown File (Loading...)", // Will update when start event arrives
+                        FileName = "Orphaned Job", // This will verify if IDs are mismatched
                         Source = evt.SourceSystem,
-                        Type = "Unknown",
+                        Type = "Error",
                         StartTime = DateTime.Now.ToString("HH:mm:ss")
                     };
                     Jobs.Insert(0, job);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[UI MATCHING] ✅ MATCH FOUND!");
                 }
 
                 // Update Data
                 job.Score = evt.QualityScore;
                 job.Status = $"{evt.OverallStatus} ({evt.QualityScore}%)";
-
-                // CRITICAL FIX: Ensure we don't overwrite with empty strings if previously set
-                if (!string.IsNullOrEmpty(evt.Message))
-                {
-                    job.ErrorDetails = evt.Message;
-                }
-                else if (job.ErrorDetails == "Waiting for details...")
-                {
-                    job.ErrorDetails = "System Error: Message content was empty.";
-                }
+                job.ErrorDetails = evt.Message; // Assign the message
 
                 if (evt.QualityScore < 50) job.StatusColor = "#FF0000";
             });
         }
-
         private void UpdateParticle(FlowParticleEvent evt)
         {
             var particle = Particles.FirstOrDefault(p => p.Id == evt.ExecutionId);

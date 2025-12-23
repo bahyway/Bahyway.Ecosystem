@@ -65,6 +65,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
     <PackageVersion Include="Microsoft.PowerShell.SDK" Version="7.4.5" />
+	<PackageVersion Include="MessagePack" Version="2.5.187" />
     <!-- HANGFIRE -->
     <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.14" />
     <PackageVersion Include="Hangfire.Core" Version="1.8.14" />

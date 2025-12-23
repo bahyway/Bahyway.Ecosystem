@@ -1,34 +1,47 @@
-﻿namespace BahyWay.SharedKernel.Application.DTOs
+﻿using MessagePack; // <--- This is required
+
+namespace BahyWay.SharedKernel.Application.DTOs
 {
+    [MessagePackObject] // <--- Mark the class
     public class PipelineRuleConfig
     {
         // =================================================
         // GROUP 1: PHYSICAL HEALTH (Free Tier)
         // =================================================
+        [Key(0)]
         public bool CheckCorruption { get; set; } = true;
+
+        [Key(1)]
         public bool CheckEmptyArchive { get; set; } = true;
 
-        // "File Size Slider" in UI
+        [Key(2)]
         public bool CheckFileSize { get; set; } = true;
-        public long MinSizeBytes { get; set; } = 1024; // Default 1KB
+
+        [Key(3)]
+        public long MinSizeBytes { get; set; } = 1024;
 
         // =================================================
         // GROUP 2: SCHEMA INTEGRITY (Standard Tier)
         // =================================================
+        [Key(4)]
         public bool EnforceColumnNames { get; set; } = true;
 
-        // "Strict Mode" Toggle
+        [Key(5)]
         public bool EnforceColumnOrder { get; set; } = false;
+
+        [Key(6)]
         public bool AllowSchemaDrift { get; set; } = false;
 
         // =================================================
         // GROUP 3: DEEP INSPECTION (Enterprise / Premium)
         // =================================================
-        // Expensive CPU operation - requires license
+        [Key(7)]
         public bool AnalyzeNulls { get; set; } = true;
 
-        // "SLA Compliance" Toggle
+        [Key(8)]
         public bool StrictSLA { get; set; } = false;
+
+        [Key(9)]
         public int MaxFileNameLength { get; set; } = 50;
     }
 }

@@ -1,7 +1,8 @@
 ﻿using BahyWay.SharedKernel.Interfaces;
 using StackExchange.Redis;
-using System.Text.Json;
+using System;
 using System.Threading.Tasks;
+using MessagePack; // <--- NEW
 
 namespace BahyWay.SharedKernel.Infrastructure.Messaging
 {
@@ -16,19 +17,29 @@ namespace BahyWay.SharedKernel.Infrastructure.Messaging
             _db = _redis.GetDatabase();
         }
 
-        // Fast: Broadcasts to UI (KGEditor)
         public async Task PublishParticleAsync(string topic, object payload)
         {
-            var json = JsonSerializer.Serialize(payload);
-            await _db.PublishAsync(topic, json);
+            try
+            {
+                // Serialize to Binary (Byte Array)
+                byte[] bytes = MessagePackSerializer.Serialize(payload);
+                await _db.PublishAsync(topic, bytes);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Redis Error] Publish failed: {ex.Message}");
+            }
         }
 
-        // Reliable: Pushes to Queue (ETLWay)
+        // Note: For Streams, Redis expects NameValues, so we usually store JSON or base64.
+        // For simplicity in this specific "PushToStreamAsync" method, we can keep JSON
+        // OR convert the binary to Base64 string. Let's stick to JSON for Streams for readability
+        // in Redis tools, but use MessagePack for the UI Pub/Sub (Particles/Scores).
         public async Task PushToStreamAsync(string streamKey, object payload)
         {
-            var json = JsonSerializer.Serialize(payload);
-            // XADD stream * data json
-            await _db.StreamAddAsync(streamKey, "data", json);
+            // Keep JSON here for now as Streams are often read by humans/scripts
+            var json = System.Text.Json.JsonSerializer.Serialize(payload);
+            await _db.StreamAddAsync(streamKey, new NameValueEntry[] { new("data", json) });
         }
 
         public async Task AcknowledgeStreamAsync(string streamKey, string messageId)
@@ -42,23 +53,19 @@ namespace BahyWay.SharedKernel.Infrastructure.Messaging
 
             await subscriber.SubscribeAsync(topic, (channel, value) =>
             {
-                if (value.HasValue)
+                try
                 {
-                    try
-                    {
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true, // Crucial
-                            IncludeFields = true // Just in case
-                        };
+                    // RedisValue can be cast to byte[]
+                    byte[] bytes = (byte[])value;
 
-                        var obj = JsonSerializer.Deserialize<T>(value.ToString(), options);
-                        if (obj != null) handler(obj);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Redis Deserialization Error: {ex.Message}");
-                    }
+                    // Deserialize Binary directly to Object
+                    var obj = MessagePackSerializer.Deserialize<T>(bytes);
+
+                    if (obj != null) handler(obj);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Binary Error] {ex.Message}");
                 }
             });
         }
