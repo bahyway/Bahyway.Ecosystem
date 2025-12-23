@@ -89,11 +89,15 @@ namespace BahyWay.SharedKernel.Infrastructure.FileStorage
                     Console.WriteLine($"[ETLWay] ✓ Renamed to: {fullOutputPath}");
 
                     // 3. Analyze the File (Metadata Extraction)
-                    if (extension.ToLower() == ".csv")
+                   // FIX: Allow .txt files to be analyzed as CSVs
+                    var ext = extension.ToLower();
+                    if (ext == ".csv" || ext == ".txt")
                     {
-                        Console.WriteLine($"[ETLWay] Analyzing CSV structure...");
                         await AnalyzeCsvDeeply(fullOutputPath, result);
-                        Console.WriteLine($"[ETLWay] ✓ Found {result.Columns.Count} columns, {result.RowCount} rows");
+                    }
+                    else if (ext == ".json")
+                    {
+                        await AnalyzeJsonStructure(fullOutputPath, result);
                     }
                 }
 
@@ -189,6 +193,64 @@ namespace BahyWay.SharedKernel.Infrastructure.FileStorage
             if (double.TryParse(value, out _)) return "Decimal";
             if (DateTime.TryParse(value, out _)) return "DateTime";
             return "String";
+        }
+
+        // Add this method to the ZipExtractionService class
+
+        private async Task AnalyzeJsonStructure(string filePath, FileMetadataDto result)
+        {
+            // Read the JSON file content
+            var json = await File.ReadAllTextAsync(filePath);
+
+            // Try to parse as a JSON array or object
+            using var doc = JsonDocument.Parse(json);
+
+            if (doc.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                var array = doc.RootElement.EnumerateArray();
+                int rowCount = 0;
+                foreach (var item in array)
+                {
+                    if (rowCount == 0 && item.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var prop in item.EnumerateObject())
+                        {
+                            result.Columns.Add(new FileColumnDefinition
+                            {
+                                ColumnName = prop.Name,
+                                OrdinalPosition = result.Columns.Count,
+                                EstimatedDataType = prop.Value.ValueKind.ToString(),
+                                HasNulls = false,
+                                MaxLength = prop.Value.ToString().Length
+                            });
+                        }
+                    }
+                    rowCount++;
+                }
+                result.RowCount = rowCount;
+            }
+            else if (doc.RootElement.ValueKind == JsonValueKind.Object)
+            {
+                // Single object, treat as one row
+                var obj = doc.RootElement;
+                foreach (var prop in obj.EnumerateObject())
+                {
+                    result.Columns.Add(new FileColumnDefinition
+                    {
+                        ColumnName = prop.Name,
+                        OrdinalPosition = result.Columns.Count,
+                        EstimatedDataType = prop.Value.ValueKind.ToString(),
+                        HasNulls = false,
+                        MaxLength = prop.Value.ToString().Length
+                    });
+                }
+                result.RowCount = 1;
+            }
+            else
+            {
+                // Not a supported JSON structure
+                result.RowCount = 0;
+            }
         }
     }
 }
