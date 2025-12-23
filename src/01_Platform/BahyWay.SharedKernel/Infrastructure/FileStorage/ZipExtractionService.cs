@@ -17,62 +17,109 @@ namespace BahyWay.SharedKernel.Infrastructure.FileStorage
         {
             var result = new FileMetadataDto();
 
-            // 1. Create the Unique Folder Name: {ZipName}_{Timestamp}
-            var zipName = Path.GetFileNameWithoutExtension(zipFilePath);
-            var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
-            var uniqueFolderName = $"{zipName}_{timestamp}";
-            var targetFolder = Path.Combine(baseOutputFolder, uniqueFolderName);
-
-            // Create the folder
-            Directory.CreateDirectory(targetFolder);
-
-            result.OriginalFileName = Path.GetFileName(zipFilePath);
-
-            using (var archive = ArchiveFactory.Open(zipFilePath))
+            try
             {
-                // Find the largest file (Assuming it's the main data CSV)
-                var entry = archive.Entries.Where(e => !e.IsDirectory)
-                                           .OrderByDescending(x => x.Size)
-                                           .FirstOrDefault();
+                // 1. Create the Unique Folder Name: {ZipName}_{Timestamp}
+                var zipName = Path.GetFileNameWithoutExtension(zipFilePath);
+                var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+                var uniqueFolderName = $"{zipName}_{timestamp}";
+                var targetFolder = Path.Combine(baseOutputFolder, uniqueFolderName);
 
-                if (entry == null) throw new Exception("Zip file is empty.");
+                // Create the folder
+                Directory.CreateDirectory(targetFolder);
+                Console.WriteLine($"[ETLWay] Created folder: {targetFolder}");
 
-                result.FileSizeBytes = entry.Size;
+                result.OriginalFileName = Path.GetFileName(zipFilePath);
 
-                // 2. Extract the Data File
-                // We keep the original name but prepend timestamp to avoid collisions inside the folder
-                var extension = Path.GetExtension(entry.Key);
-                var cleanName = Path.GetFileNameWithoutExtension(entry.Key);
-                var finalFileName = $"{timestamp}_{cleanName}{extension}";
-                var fullOutputPath = Path.Combine(targetFolder, finalFileName);
-
-                result.GeneratedDataFileName = fullOutputPath; // Save full path for next steps
-
-                // Physical Extraction
-                entry.WriteToDirectory(targetFolder, new ExtractionOptions { ExtractFullPath = false, Overwrite = true });
-
-                // Rename to timestamped name
-                var extractedPath = Path.Combine(targetFolder, entry.Key);
-                if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);
-                File.Move(extractedPath, fullOutputPath);
-
-                // 3. Analyze the File (Metadata Extraction)
-                if (extension.ToLower() == ".csv")
+                using (var archive = ArchiveFactory.Open(zipFilePath))
                 {
-                    await AnalyzeCsvDeeply(fullOutputPath, result);
+                    // Find the largest file (Assuming it's the main data CSV)
+                    var entry = archive.Entries.Where(e => !e.IsDirectory)
+                                               .OrderByDescending(x => x.Size)
+                                               .FirstOrDefault();
+
+                    if (entry == null)
+                        throw new Exception("Zip file is empty - no files found.");
+
+                    result.FileSizeBytes = entry.Size;
+
+                    // 2. Extract the Data File
+                    var extension = Path.GetExtension(entry.Key);
+
+                    // FIX: Use Path.GetFileName to strip folder path from entry.Key
+                    var fileName = Path.GetFileName(entry.Key);
+                    var cleanName = Path.GetFileNameWithoutExtension(fileName);
+                    var finalFileName = $"{timestamp}_{cleanName}{extension}";
+                    var fullOutputPath = Path.Combine(targetFolder, finalFileName);
+
+                    result.GeneratedDataFileName = fullOutputPath; // Save full path for next steps
+
+                    Console.WriteLine($"[ETLWay] ?? Started processing {zipName}.zip...");
+                    Console.WriteLine($"[ETLWay] ?? Unzipping '{entry.Key}' → '{fileName}'...");
+
+                    // Physical Extraction (flat - no subfolders)
+                    entry.WriteToDirectory(targetFolder, new ExtractionOptions
+                    {
+                        ExtractFullPath = false,  // Extract flat, no folder structure
+                        Overwrite = true
+                    });
+
+                    // FIX: Use just the filename (not the full entry.Key which includes folders)
+                    var extractedPath = Path.Combine(targetFolder, fileName);
+
+                    // Verify the file was actually extracted
+                    if (!File.Exists(extractedPath))
+                    {
+                        // Detailed error message for debugging
+                        var filesInFolder = Directory.GetFiles(targetFolder);
+                        var fileList = string.Join(", ", filesInFolder.Select(f => Path.GetFileName(f)));
+
+                        throw new FileNotFoundException(
+                            $"Extraction failed: Expected '{fileName}' at '{extractedPath}'. " +
+                            $"Files in folder: [{fileList}]",
+                            extractedPath);
+                    }
+
+                    Console.WriteLine($"[ETLWay] ✓ Extracted to: {extractedPath}");
+
+                    // Rename to timestamped name
+                    if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);
+                    File.Move(extractedPath, fullOutputPath);
+
+                    Console.WriteLine($"[ETLWay] ✓ Renamed to: {fullOutputPath}");
+
+                    // 3. Analyze the File (Metadata Extraction)
+                    if (extension.ToLower() == ".csv")
+                    {
+                        Console.WriteLine($"[ETLWay] Analyzing CSV structure...");
+                        await AnalyzeCsvDeeply(fullOutputPath, result);
+                        Console.WriteLine($"[ETLWay] ✓ Found {result.Columns.Count} columns, {result.RowCount} rows");
+                    }
                 }
+
+                // 4. Save the Metadata as a JSON file in the same folder
+                var metaJsonName = $"{timestamp}_{zipName}_metadata.json";
+                var metaPath = Path.Combine(targetFolder, metaJsonName);
+                var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+                var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(result, jsonOptions);
+                await File.WriteAllBytesAsync(metaPath, jsonBytes);
+
+                result.GeneratedFormatFileName = metaPath;
+
+                Console.WriteLine($"[ETLWay] ✓ Metadata saved: {metaPath}");
+                Console.WriteLine($"[ETLWay] ✓ Extraction complete!");
+
+                return result;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ETLWay] ✗✗✗ EXTRACTION FAILED!");
+                Console.WriteLine($"[ETLWay] ?? Error: {ex.Message}");
+                Console.WriteLine($"[ETLWay] ?? Type: {ex.GetType().Name}");
 
-            // 4. Save the Metadata as a JSON file in the same folder
-            var metaJsonName = $"{timestamp}_{zipName}_metadata.json";
-            var metaPath = Path.Combine(targetFolder, metaJsonName);
-            var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
-            var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(result, jsonOptions);
-            await File.WriteAllBytesAsync(metaPath, jsonBytes);
-
-            result.GeneratedFormatFileName = metaPath;
-
-            return result;
+                // Re-throw so the Actor catches it and publishes error to UI
+                throw;
+            }
         }
 
         private async Task AnalyzeCsvDeeply(string filePath, FileMetadataDto result)

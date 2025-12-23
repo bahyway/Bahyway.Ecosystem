@@ -1,104 +1,226 @@
-﻿using BahyWay.SharedKernel.Application.Abstractions;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using BahyWay.SharedKernel.Application.Abstractions;
 using BahyWay.SharedKernel.Application.DTOs;
 using ETLWay.Application.Abstractions.Patterns;
-using System.Threading.Tasks;
 
 namespace ETLWay.Infrastructure.Patterns.Transformers
 {
-
+    /// <summary>
+    /// Fuzzy Schema Validator - Validates CSV schema against expected format
+    /// Production-ready with comprehensive logging and error handling
+    /// </summary>
     public class FuzzySchemaValidator : ITransformer<FileMetadataDto, FileMetadataDto>
     {
-        // In reality, inject IRulesEngine here
         private readonly double _strictnessThreshold;
-        private readonly IMessageResolver _messages; // Inject this
+        private readonly IMessageResolver _messages;
 
-        // 2. Inject it in the Constructor
         public FuzzySchemaValidator(IMessageResolver messages, double strictness = 0.9)
         {
-            _messages = messages;
+            _messages = messages ?? throw new ArgumentNullException(nameof(messages));
             _strictnessThreshold = strictness;
-            // ...
+
+            Console.WriteLine($"[Validator] Initialized with strictness threshold: {_strictnessThreshold}%");
         }
 
-
-        //    public Task<FileMetadataDto?> TransformAsync(FileMetadataDto input, EtlContext context)
-        //    {
-        //        // 1. Calculate Score (Simulation)
-        //        double score = 100.0;
-
-        //        // Rule 1: Must have columns
-        //        if (input.Columns.Count == 0) score -= 100;
-
-        //        // Rule 2: Critical Column "uuid" check
-        //        bool hasId = input.Columns.Exists(c => c.ColumnName.ToLower().Contains("uuid"));
-        //        if (!hasId) score -= 40.0; // Heavy penalty
-
-        //        // Rule 3: Null check
-        //        // If we detected nulls in critical columns during extraction
-        //        // score -= 10.0;
-
-        //        // 2. Save Score to Context
-        //        context.QualityScore = Math.Max(0, score); // Cannot be negative
-
-        //        // 3. Threshold Check (< 50% = Critical Failure)
-        //        if (context.QualityScore < 50.0)
-        //        {
-        //        //context.Errors.Add($"CRITICAL: Quality Score {score}% is below threshold (50%).");
-        //        //return Task.FromResult<FileMetadataDto?>(null); // Return Null to Stop Pipeline
-        //        // NEW: Use the Code
-        //        string msg = _messages.GetError("ERR_SCORE_CRITICAL", score, 50.0);
-        //        context.Errors.Add(msg);
-
-        //        return Task.FromResult<FileMetadataDto?>(null);
-        //    }
-
-        //        // 4. Warning Check (< 90% = Human Review needed)
-        //        if (context.QualityScore < 90.0)
-        //        {
-        //            // We don't stop, but we flag it
-        //            context.Metadata["RequiresApproval"] = true;
-        //        }
-
-        //        return Task.FromResult<FileMetadataDto?>(input);
-        //    }
-        //}
         public Task<FileMetadataDto?> TransformAsync(FileMetadataDto input, EtlContext context)
         {
-            double score = 100.0;
-
-            // 1. Logic: Check for UUID (The test case)
-            bool hasId = input.Columns.Exists(c => c.ColumnName.ToLower().Contains("uuid"));
-
-            if (!hasId)
+            try
             {
-                score -= 60.0; // Penalty
-                // Log detailed error for the UI
-                context.Errors.Add("Schema Mismatch: Critical Column 'uuid' is missing.");
-            }
+                Console.WriteLine("");
+                Console.WriteLine("[Validator] ══════════════════════════════════════════════════");
+                Console.WriteLine("[Validator] FUZZY SCHEMA VALIDATOR STARTED");
+                Console.WriteLine($"[Validator] JobId: {context.JobId}");
+                Console.WriteLine($"[Validator] Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff} UTC");
+                Console.WriteLine("[Validator] ══════════════════════════════════════════════════");
 
-            // 2. Save Score
-            context.QualityScore = Math.Max(0, score);
-
-            // 3. Threshold Check
-            if (context.QualityScore < 50.0)
-            {
-                // If we haven't added a specific error yet, add a generic one using the Message Resolver
-                if (context.Errors.Count == 0)
+                // Validate input
+                if (input == null)
                 {
-                    string msg = _messages.GetError("ERR_SCORE_CRITICAL", score, 50.0);
-                    context.Errors.Add(msg);
+                    Console.WriteLine("[Validator] ✗ ERROR: Input is NULL");
+                    context.Errors.Add("Validator received null input");
+                    context.QualityScore = 0;
+                    return Task.FromResult<FileMetadataDto?>(null);
                 }
 
-                return Task.FromResult<FileMetadataDto?>(null); // Stop Pipeline
-            }
+                if (input.Columns == null || input.Columns.Count == 0)
+                {
+                    Console.WriteLine("[Validator] ✗ ERROR: No columns found in input");
+                    Console.WriteLine($"[Validator] Columns Count: {input.Columns?.Count ?? 0}");
+                    context.Errors.Add("No columns detected in file");
+                    context.QualityScore = 0;
+                    return Task.FromResult<FileMetadataDto?>(null);
+                }
 
-            // 4. Warning
-            if (context.QualityScore < 90.0)
+                // Log file information
+                Console.WriteLine($"[Validator] File: {input.OriginalFileName}");
+                Console.WriteLine($"[Validator] Size: {input.FileSizeBytes:N0} bytes");
+                Console.WriteLine($"[Validator] Rows: {input.RowCount:N0}");
+                Console.WriteLine($"[Validator] Columns: {input.Columns.Count}");
+                Console.WriteLine("");
+
+                // Display column list
+                Console.WriteLine("[Validator] Column Analysis:");
+                Console.WriteLine("[Validator] ┌────────────────────────────────────────");
+
+                int displayCount = Math.Min(input.Columns.Count, 15);
+                for (int i = 0; i < displayCount; i++)
+                {
+                    var col = input.Columns[i];
+                    Console.WriteLine($"[Validator] │ {i + 1:D2}. {col.ColumnName,-30} " +
+                                    $"({col.EstimatedDataType}, Max:{col.MaxLength}, " +
+                                    $"Nulls:{(col.HasNulls ? "Yes" : "No")})");
+                }
+
+                if (input.Columns.Count > displayCount)
+                {
+                    Console.WriteLine($"[Validator] │ ... and {input.Columns.Count - displayCount} more columns");
+                }
+
+                Console.WriteLine("[Validator] └────────────────────────────────────────");
+                Console.WriteLine("");
+
+                // Initialize score
+                double score = 100.0;
+                Console.WriteLine($"[Validator] Initial Score: {score}%");
+                Console.WriteLine("");
+
+                // RULE 1: Check for UUID column
+                Console.WriteLine("[Validator] ┌─ RULE 1: UUID Column Check");
+
+                try
+                {
+                    bool hasUuid = input.Columns.Exists(c =>
+                        c.ColumnName.ToLower().Contains("uuid"));
+
+                    Console.WriteLine($"[Validator] │  Searching for 'uuid' column...");
+                    Console.WriteLine($"[Validator] │  Result: {(hasUuid ? "✓ FOUND" : "✗ NOT FOUND")}");
+
+                    if (!hasUuid)
+                    {
+                        double penalty = 60.0;
+                        score -= penalty;
+
+                        string error = "Schema Mismatch: Critical Column 'uuid' is missing.";
+                        context.Errors.Add(error);
+
+                        Console.WriteLine($"[Validator] │  ✗ UUID column is MISSING!");
+                        Console.WriteLine($"[Validator] │  Penalty Applied: -{penalty} points");
+                        Console.WriteLine($"[Validator] │  New Score: {score}%");
+                        Console.WriteLine($"[Validator] │  Error Logged: {error}");
+                    }
+                    else
+                    {
+                        var uuidColumn = input.Columns.First(c =>
+                            c.ColumnName.ToLower().Contains("uuid"));
+
+                        Console.WriteLine($"[Validator] │  ✓ UUID column found: '{uuidColumn.ColumnName}'");
+                        Console.WriteLine($"[Validator] │  Type: {uuidColumn.EstimatedDataType}");
+                        Console.WriteLine($"[Validator] │  No penalty applied");
+                    }
+                }
+                catch (Exception ruleEx)
+                {
+                    Console.WriteLine($"[Validator] │  ✗ ERROR in UUID check: {ruleEx.Message}");
+                    context.Errors.Add($"UUID validation error: {ruleEx.Message}");
+                    score -= 50.0;
+                }
+
+                Console.WriteLine("[Validator] └─ Rule 1 Complete");
+                Console.WriteLine("");
+
+                // Save final score
+                context.QualityScore = Math.Max(0, score);
+                Console.WriteLine($"[Validator] Final Quality Score: {context.QualityScore}%");
+                Console.WriteLine($"[Validator] Threshold: 50%");
+                Console.WriteLine("");
+
+                // THRESHOLD CHECK
+                if (context.QualityScore < 50.0)
+                {
+                    Console.WriteLine("[Validator] ✗✗✗ CRITICAL FAILURE ✗✗✗");
+                    Console.WriteLine($"[Validator] Score {context.QualityScore}% < 50% threshold");
+                    Console.WriteLine("");
+
+                    // Ensure we have an error message
+                    if (context.Errors.Count == 0)
+                    {
+                        try
+                        {
+                            string msg = _messages.GetError("ERR_SCORE_CRITICAL", score, 50.0);
+                            context.Errors.Add(msg);
+                            Console.WriteLine($"[Validator] Generic error added: {msg}");
+                        }
+                        catch (Exception msgEx)
+                        {
+                            string fallback = $"Critical quality failure: Score {context.QualityScore}% below threshold";
+                            context.Errors.Add(fallback);
+                            Console.WriteLine($"[Validator] Message resolver failed: {msgEx.Message}");
+                            Console.WriteLine($"[Validator] Fallback error added: {fallback}");
+                        }
+                    }
+
+                    Console.WriteLine($"[Validator] Total Errors: {context.Errors.Count}");
+                    Console.WriteLine("[Validator] Error List:");
+                    for (int i = 0; i < context.Errors.Count; i++)
+                    {
+                        Console.WriteLine($"[Validator]   {i + 1}. {context.Errors[i]}");
+                    }
+                    Console.WriteLine("");
+
+                    Console.WriteLine("[Validator] Decision: REJECT FILE");
+                    Console.WriteLine("[Validator] Returning: NULL (stop pipeline)");
+                    Console.WriteLine("[Validator] ══════════════════════════════════════════════════");
+                    Console.WriteLine("");
+
+                    return Task.FromResult<FileMetadataDto?>(null); // Stop Pipeline
+                }
+
+                // APPROVAL CHECK (50-90%)
+                if (context.QualityScore < 90.0)
+                {
+                    Console.WriteLine("[Validator] ⚠️ WARNING: Score below 90%");
+                    Console.WriteLine("[Validator] Action: Flagging for manual approval");
+                    context.Metadata["RequiresApproval"] = true;
+                    Console.WriteLine("");
+                }
+
+                // VALIDATION PASSED
+                Console.WriteLine("[Validator] ✓✓✓ VALIDATION PASSED ✓✓✓");
+                Console.WriteLine($"[Validator] Score {context.QualityScore}% >= 50% threshold");
+                Console.WriteLine("[Validator] Decision: ACCEPT FILE");
+                Console.WriteLine("[Validator] Returning: FileMetadataDto (continue pipeline)");
+                Console.WriteLine("[Validator] ══════════════════════════════════════════════════");
+                Console.WriteLine("");
+
+                return Task.FromResult<FileMetadataDto?>(input);
+            }
+            catch (Exception ex)
             {
-                context.Metadata["RequiresApproval"] = true;
-            }
+                Console.WriteLine("");
+                Console.WriteLine("[Validator] ✗✗✗ VALIDATOR EXCEPTION ✗✗✗");
+                Console.WriteLine($"[Validator] Error: {ex.Message}");
+                Console.WriteLine($"[Validator] Type: {ex.GetType().Name}");
+                Console.WriteLine($"[Validator] Source: {ex.Source}");
+                Console.WriteLine($"[Validator] StackTrace:");
+                Console.WriteLine(ex.StackTrace);
 
-            return Task.FromResult<FileMetadataDto?>(input);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"[Validator] Inner Exception: {ex.InnerException.Message}");
+                }
+
+                Console.WriteLine("[Validator] ══════════════════════════════════════════════════");
+                Console.WriteLine("");
+
+                // Log error in context
+                context.Errors.Add($"Validation exception: {ex.Message}");
+                context.QualityScore = 0;
+
+                // Return null to stop pipeline
+                return Task.FromResult<FileMetadataDto?>(null);
+            }
         }
     }
- }
+}

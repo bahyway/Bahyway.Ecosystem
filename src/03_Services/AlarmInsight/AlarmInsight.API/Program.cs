@@ -3,7 +3,6 @@ using AlarmInsight.Infrastructure.BackgroundJobs;
 using BahyWay.SharedKernel; // For AddBahyWayPlatform
 using BahyWay.SharedKernel.Application.Abstractions;
 using BahyWay.SharedKernel.Interfaces; // For IMessageBus
-//using ETLWay.Logic.Actors; // For IngestZipFileActor
 using Akka.Actor; // For ActorSystem
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -64,20 +63,19 @@ builder.Services.AddSingleton<ICacheService, BahyWay.SharedKernel.Infrastructure
 // A. Register Redis & ZipService (Using the helper we created in SharedKernel)
 builder.Services.AddBahyWayPlatform(builder.Configuration);
 
-// B. Register Akka Actor System
+// B. Register File Watcher Service (The Logic for Watching) <--- ADDED THIS
+builder.Services.AddSingleton<IFileWatcherService, BahyWay.SharedKernel.Infrastructure.FileWatcher.FileWatcherService>();
+
+// C. Register Akka Actor System
 builder.Services.AddSingleton<ActorSystem>(_ => ActorSystem.Create("BahyWaySystem"));
 
-// C. Register the WatchDog (The Trigger)
-// Ensure FileWatchDogService uses the injected IMessageBus
+// D. Register the WatchDog (The Trigger)
+// Ensure FileWatchDogService uses the injected IMessageBus and IFileWatcherService
 builder.Services.AddHostedService<FileWatchDogService>();
 
 // ============================================
 // 6. ADD HANGFIRE
 // ============================================
-//var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight");
-////builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(hangfireConn));
-//?? "Host=localhost;Port=5432;Database=bahyway_db;Username=bahyway_admin;Password=password123";
-//builder.Services.AddHangfireServer();
 // Get connection string, OR use the fallback string if it returns null
 var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight")
     ?? "Host=localhost;Port=5432;Database=bahyway_db;Username=bahyway_admin;Password=password123";
@@ -85,6 +83,7 @@ var hangfireConn = builder.Configuration.GetConnectionString("AlarmInsight")
 // Now use the variable
 builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(hangfireConn));
 builder.Services.AddHangfireServer();
+
 // ============================================
 // 7. ADD CORS
 // ============================================
@@ -105,6 +104,9 @@ using (var scope = app.Services.CreateScope())
     var bus = app.Services.GetRequiredService<IMessageBus>();
     var zipService = app.Services.GetRequiredService<IZipExtractionService>();
 
+    // Get the Message Resolver
+    var messageResolver = app.Services.GetRequiredService<IMessageResolver>();
+
     // 1. Create Statistics Actor (The Scoreboard)
     var statsProps = Props.Create(() => new StatisticsActor(bus));
     actorSystem.ActorOf(statsProps, "stats");
@@ -114,13 +116,7 @@ using (var scope = app.Services.CreateScope())
     actorSystem.ActorOf(ingestProps, "ingest"); // This actor is now ALIVE and waiting.
 
     // 3. NEW: The Pattern-Based Pipeline Actor
-    // PASS BOTH SERVICES: ZipService AND Bus
-
-    // Get the Message Resolver
-    var messageResolver = app.Services.GetRequiredService<IMessageResolver>();
-
-    //var pipelineProps = Props.Create(() => new GeneratedPipelineActor(zipService, bus));
-
+    // PASS ALL 3 SERVICES: ZipService, Bus, MessageResolver
     var pipelineProps = Props.Create(() => new GeneratedPipelineActor(zipService, bus, messageResolver));
     actorSystem.ActorOf(pipelineProps, "generated_pipeline");
 }
