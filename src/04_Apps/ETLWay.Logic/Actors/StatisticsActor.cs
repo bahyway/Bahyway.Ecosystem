@@ -30,7 +30,7 @@ namespace ETLWay.Logic.Actors
                 // 2. Calculate New Score
                 var (score, status) = CalculateScore(evt.SourceSystem);
 
-                // 3. Broadcast to KGEditor Dashboard
+                // 3. Broadcast to ShoWay Dashboard
                 var scoreEvent = new ScoreUpdateEvent
                 {
                     SourceSystem = evt.SourceSystem,

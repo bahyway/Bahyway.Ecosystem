@@ -1,0 +1,6 @@
+@BahyWay.VizWay.API_HostAddress = http://localhost:5086
+
+GET {{BahyWay.VizWay.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

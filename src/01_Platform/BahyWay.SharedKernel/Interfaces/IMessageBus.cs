@@ -4,7 +4,7 @@ namespace BahyWay.SharedKernel.Interfaces
 {
     public interface IMessageBus
     {
-        // 1. For Visuals (Fire-and-Forget / PubSub) -> Goes to KGEditor
+        // 1. For Visuals (Fire-and-Forget / PubSub) -> Goes to ShoWay
         Task PublishParticleAsync(string topic, object payload);
 
         // 2. For Work (Reliable / Streams) -> Goes to ETLWay

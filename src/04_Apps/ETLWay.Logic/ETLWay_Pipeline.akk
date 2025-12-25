@@ -52,7 +52,7 @@ CONTEXT ETLWay_Pipeline {
         INPUT: file_path
 
         EXECUTION {
-            // Visual Update: Tell KGEditor to spawn a particle at "Landing Zone"
+            // Visual Update: Tell ShoWay to spawn a particle at "Landing Zone"
             INSERT_EVENT: ui_particle_spawn {
                 from_node: "Stage_Landing",
                 to_node: "Stage_Cleansing",

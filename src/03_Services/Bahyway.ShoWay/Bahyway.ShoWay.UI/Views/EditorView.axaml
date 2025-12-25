@@ -1,0 +1,5 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Bahyway.ShoWay.UI.Views.EditorView">
+  <Grid Background="#1e1e1e"><TextBlock Text="Editor Loaded" Foreground="Gray"/></Grid>
+</UserControl>

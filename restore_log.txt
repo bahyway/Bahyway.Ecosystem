@@ -1,0 +1,45 @@
+  Determining projects to restore...
+  Restored C:\Dev\BahyWay\src\03_Services\BahyWay.Web\BahyWay.Web.API\BahyWay.Web.API.csproj (in 5.62 sec).
+C:\Dev\BahyWay\src\04_Apps\WPDWay.Logic\WPDWay.Logic\WPDWay.Logic.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\Bahyway.Orchestrator\Bahyway.Orchestrator.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5 [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\04_Apps\WPDWay.Logic\WPDWay.Logic\WPDWay.Logic.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\Bahyway.Orchestrator\Bahyway.Orchestrator.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\Bahyway.Orchestrator\Bahyway.Orchestrator.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\05_Tests\Bahyway.Tests\Bahyway.Tests.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\05_Tests\Bahyway.Tests\Bahyway.Tests.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\04_Apps\beeMDM.Logic\beeMDM.Logic\beeMDM.Logic.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\04_Apps\beeMDM.Logic\beeMDM.Logic\beeMDM.Logic.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj : warning NU1903: Package 'System.Text.Json' 8.0.3 has a known high severity vulnerability, https://github.com/advisories/GHSA-8g4q-xg66-9fp4 [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj : warning NU1903: Package 'System.Text.Json' 8.0.3 has a known high severity vulnerability, https://github.com/advisories/GHSA-hh2w-p6rv-4g7w [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Restored C:\Dev\BahyWay\src\01_Platform\BahyWay.SharedKernel\BahyWay.SharedKernel.csproj (in 16.41 sec).
+  Restored C:\Dev\BahyWay\src\04_Apps\beeMDM.Logic\beeMDM.Logic\beeMDM.Logic.csproj (in 16.37 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\BahyWay.RulesEngine.Core\BahyWay.RulesEngine.Core.csproj (in 16.41 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\Bahyway.Orchestrator\Bahyway.Orchestrator.csproj (in 16.37 sec).
+  Restored C:\Dev\BahyWay\src\03_Services\AlarmInsight\AlarmInsight.Domain\AlarmInsight.Domain.csproj (in 10.52 sec).
+  Restored C:\Dev\BahyWay\src\04_Apps\WPDWay.Logic\WPDWay.Logic\WPDWay.Logic.csproj (in 16.37 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\ETLWay.Core\ETLWay.Domain\ETLWay.Domain.csproj (in 16.42 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\ETLWay.Core\ETLWay.Application\ETLWay.Application.csproj (in 16.41 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\ETLWay.Core\ETLWay.Infrastructure\ETLWay.Infrastructure.csproj (in 16.41 sec).
+C:\Dev\BahyWay\src\04_Apps\Najaf.Cemetery\Najaf.Cemetery\Najaf.Cemetery.csproj : warning NU1902: Package 'MessagePack' 2.5.168 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4qm4-8hg2-g2xm [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\04_Apps\Najaf.Cemetery\Najaf.Cemetery\Najaf.Cemetery.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Restored C:\Dev\BahyWay\src\05_Tests\Bahyway.Tests\Bahyway.Tests.csproj (in 16.48 sec).
+  Restored C:\Dev\BahyWay\src\04_Apps\ETLWay.Logic\ETLWay.Logic.csproj (in 16.41 sec).
+  Restored C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.Domain\Bahyway.ShoWay.Domain.csproj (in 30 ms).
+  Restored C:\Dev\BahyWay\src\01_Platform\BahyWay.MetaWay\MetaWay.AutoAnalyzer\MetaWay.AutoAnalyzer.csproj (in 34 ms).
+  Restored C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.Infrastructure\Bahyway.ShoWay.Infrastructure.csproj (in 25 ms).
+  Restored C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.Application\Bahyway.ShoWay.Application.csproj (in 25 ms).
+  Restored C:\Dev\BahyWay\src\03_Services\AlarmInsight\AlarmInsight.Application\AlarmInsight.Application.csproj (in 125 ms).
+  Restored C:\Dev\BahyWay\src\03_Services\BahyWay.VizWay.API\BahyWay.VizWay.API.csproj (in 104 ms).
+  Restored C:\Dev\BahyWay\src\04_Apps\Najaf.Cemetery\Najaf.Cemetery\Najaf.Cemetery.csproj (in 141 ms).
+  Restored C:\Dev\BahyWay\src\02_Tools\Akkadian.Compiler\Akkadian.Cli\Akkadian.Cli.csproj (in 647 ms).
+  Restored C:\Dev\BahyWay\src\02_Tools\Akkadian.Compiler\Akkadian.Core\Akkadian.Core.csproj (in 708 ms).
+  Restored C:\Dev\BahyWay\src\01_Platform\BahyWay.MetaWay\MetaWay.AutoAnalyzer.CLI\MetaWay.AutoAnalyzer.CLI.csproj (in 2.99 sec).
+  Restored C:\Dev\BahyWay\src\01_Platform\ETLWay.Core\ETLWay.Orchestrator\ETLWay.Orchestrator.csproj (in 3.33 sec).
+  Restored C:\Dev\BahyWay\src\03_Services\AlarmInsight\AlarmInsight.API\AlarmInsight.API.csproj (in 4.14 sec).
+  Restored C:\Dev\BahyWay\src\03_Services\AlarmInsight\AlarmInsight.Infrastructure\AlarmInsight.Infrastructure.csproj (in 20.75 sec).
+C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.UI\Bahyway.ShoWay.UI.csproj : warning NU1904: Package 'Akka.Remote' 1.5.15 has a known critical severity vulnerability, https://github.com/advisories/GHSA-jhpv-4q4f-43g5 [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.UI\Bahyway.ShoWay.UI.csproj : warning NU1903: Package 'System.Text.Json' 8.0.3 has a known high severity vulnerability, https://github.com/advisories/GHSA-8g4q-xg66-9fp4 [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.UI\Bahyway.ShoWay.UI.csproj : warning NU1903: Package 'System.Text.Json' 8.0.3 has a known high severity vulnerability, https://github.com/advisories/GHSA-hh2w-p6rv-4g7w [C:\Dev\BahyWay\Bahyway.Ecosystem.sln]
+  Restored C:\Dev\BahyWay\src\03_Services\Bahyway.ShoWay\Bahyway.ShoWay.UI\Bahyway.ShoWay.UI.csproj (in 22.77 sec).

@@ -1,0 +1,168 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Bahyway.ShoWay.UI.ViewModels.Monitoring"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Bahyway.ShoWay.UI.Views.Monitoring.PipelineMonitorView"
+             x:DataType="vm:PipelineMonitorViewModel">
+
+	<Design.DataContext>
+		<vm:PipelineMonitorViewModel />
+	</Design.DataContext>
+
+	<Grid RowDefinitions="*, 250" Background="#1e1e1e">
+
+		<!-- ROW 0: THE MAP -->
+		<Border Grid.Row="0" BorderBrush="#333" BorderThickness="0,0,0,2">
+			<Panel>
+				<Path Stroke="#444" StrokeThickness="4" Data="M 80,180 L 250,180 L 450,180 L 650,180" />
+				<Path Stroke="#444" StrokeThickness="4" Data="M 480,210 L 480,300" />
+
+				<ItemsControl ItemsSource="{Binding Stations}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.Styles>
+						<Style Selector="ContentPresenter" x:DataType="vm:StationNode">
+							<Setter Property="Canvas.Left" Value="{Binding X}"/>
+							<Setter Property="Canvas.Top" Value="{Binding Y}"/>
+						</Style>
+					</ItemsControl.Styles>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Width="100">
+								<Border Background="#333" CornerRadius="50" Width="60" Height="60" BorderBrush="Gray" BorderThickness="2">
+									<TextBlock Text="{Binding Icon}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								</Border>
+								<TextBlock Text="{Binding Name}" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,0" FontWeight="Bold"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<ItemsControl ItemsSource="{Binding Particles}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.Styles>
+						<Style Selector="ContentPresenter" x:DataType="vm:ParticleModel">
+							<Setter Property="Canvas.Left" Value="{Binding X}"/>
+							<Setter Property="Canvas.Top" Value="{Binding Y}"/>
+							<Setter Property="Transitions">
+								<Transitions>
+									<DoubleTransition Property="Canvas.Left" Duration="0:0:1.0" Easing="CubicEaseOut"/>
+									<DoubleTransition Property="Canvas.Top" Duration="0:0:1.0" Easing="CubicEaseOut"/>
+								</Transitions>
+							</Setter>
+						</Style>
+					</ItemsControl.Styles>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="{Binding Color}" Width="20" Height="20" CornerRadius="10" BorderBrush="White" BorderThickness="2">
+								<ToolTip.Tip>
+									<TextBlock Text="{Binding Label}"/>
+								</ToolTip.Tip>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Panel>
+		</Border>
+
+		<!-- ROW 1: THE GRID -->
+		<DataGrid Grid.Row="1" ItemsSource="{Binding Jobs}" AutoGenerateColumns="False" IsReadOnly="True" Background="#252526" HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ID (Debug)" Binding="{Binding Id}" Width="100"/>
+				<DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200"/>
+				<DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="150"/>
+				<DataGridTemplateColumn Header="Landing" Width="80">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Ellipse Width="15" Height="15" Fill="{Binding LandingColor}" HorizontalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Extract" Width="80">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Ellipse Width="15" Height="15" Fill="{Binding ExtractionColor}" HorizontalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Schema" Width="80">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Ellipse Width="15" Height="15" Fill="{Binding SchemaColor}" HorizontalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Load" Width="80">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Ellipse Width="15" Height="15" Fill="{Binding LoadColor}" HorizontalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Action" Width="*">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Content="View"
+							Command="{Binding $parent[UserControl].((vm:PipelineMonitorViewModel)DataContext).ViewDetailsCommand}"
+							CommandParameter="{Binding}"
+							Background="#444" Foreground="White" HorizontalAlignment="Center"/>	
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<!-- ROW 2: DETAILS POPUP OVERLAY (CONTENT RESTORED) -->
+		<Grid Grid.RowSpan="2" Background="#AA000000" IsVisible="{Binding IsDetailsVisible}">
+			<Border Name="PopupBorder" Background="#252526" BorderBrush="#3498db" BorderThickness="2" CornerRadius="5" Width="500" Height="300" HorizontalAlignment="Center" VerticalAlignment="Center" BoxShadow="0 0 20 5 Black" PointerPressed="OnPopupPointerPressed" PointerMoved="OnPopupPointerMoved" PointerReleased="OnPopupPointerReleased">
+				<Border.RenderTransform>
+					<TranslateTransform X="0" Y="0"/>
+				</Border.RenderTransform>
+
+				<Grid RowDefinitions="Auto, *, Auto" Margin="20">
+					<!-- Title -->
+					<StackPanel Grid.Row="0" Spacing="5">
+						<TextBlock Text="Job Details" FontSize="20" FontWeight="Bold" Foreground="White"/>
+						<TextBlock Text="{Binding SelectedJob.FileName}" FontSize="14" Foreground="#3498db"/>
+						<Separator Background="#444" Height="2"/>
+					</StackPanel>
+
+					<!-- Content -->
+					<StackPanel Grid.Row="1" Margin="0,15" Spacing="10">
+						<Grid ColumnDefinitions="100, *">
+							<TextBlock Text="Source:" Foreground="Gray" Grid.Column="0"/>
+							<TextBlock Text="{Binding SelectedJob.Source}" Foreground="White" Grid.Column="1"/>
+						</Grid>
+						<Grid ColumnDefinitions="100, *">
+							<TextBlock Text="Status:" Foreground="Gray" Grid.Column="0"/>
+							<TextBlock Text="{Binding SelectedJob.Status}" Foreground="{Binding SelectedJob.StatusColor}" FontWeight="Bold" Grid.Column="1"/>
+						</Grid>
+						<Grid ColumnDefinitions="100, *">
+							<TextBlock Text="Score:" Foreground="Gray" Grid.Column="0"/>
+							<TextBlock Text="{Binding SelectedJob.Score, StringFormat='{}{0}%'}" Foreground="White" Grid.Column="1"/>
+						</Grid>
+
+						<!-- THE ERROR MESSAGE FROM JSON -->
+						<TextBlock Text="System Message:" Foreground="Gray" Margin="0,10,0,0"/>
+						<Border Background="#330000" BorderBrush="Red" BorderThickness="1" Padding="10" CornerRadius="3">
+							<TextBlock Text="{Binding SelectedJob.ErrorDetails}" Foreground="#ffcccc" TextWrapping="Wrap"/>
+						</Border>
+					</StackPanel>
+
+					<!-- Footer -->
+					<Button Grid.Row="2" Content="Close" Command="{Binding CloseDetailsCommand}" HorizontalAlignment="Right" Background="#34495e" Foreground="White"/>
+				</Grid>
+			</Border>
+		</Grid>
+
+	</Grid>
+</UserControl>
